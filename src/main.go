@@ -6,10 +6,16 @@ package main
 
 import (
   "fmt"
+  "mnemonic"
 )
 
 
 func main() {
-  fmt.Printf("Testing...\n")
+  fmt.Println("Testing...")
+
+  mnemonic.EntropyToPhraseAndSeed()
+  mnemonic.PhraseToEntropyAndSeed()
+  mnemonic.VerifyPhraseAndSeed()
+
 }
 

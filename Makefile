@@ -1,18 +1,23 @@
 
 BUILD_CMD=go build
 
+BIN_NAME=aller.out
+
 BIN_DIR=./bin
 SRC_DIR=./src
 
+export GOPATH=$(shell pwd)
 
-all: main api
+build:
+	$(BUILD_CMD) -o $(BIN_DIR)/$(BIN_NAME) $(SRC_DIR)/*.go
 
-main:
-	$(BUILD_CMD) -o $(BIN_DIR)/main.out $(SRC_DIR)/main.go
+start: build
+	./bin/$(BIN_NAME)
 
-api:
-	$(BUILD_CMD) -o $(BIN_DIR)/mnemonic.out $(SRC_DIR)/mnemonic.go
+test:
+	go test -cover mnemonic
+
 
 clean:
-	rm -f *.out
+	rm -f bin/*
 

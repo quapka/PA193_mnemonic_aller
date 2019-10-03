@@ -9,4 +9,5 @@
 *.tgz
 *.b2z
 *.bak
+bin/*
 

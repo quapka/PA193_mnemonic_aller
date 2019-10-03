@@ -1,0 +1,12 @@
+*.zip
+*.tar
+*.o
+*.i
+*.7z
+*.gz
+*~
+*.out
+*.tgz
+*.b2z
+*.bak
+

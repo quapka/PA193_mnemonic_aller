@@ -6,7 +6,7 @@ package main
 
 import (
   "fmt"
-  "mnemonic"
+  "./mnemonic"
 )
 
 
@@ -14,8 +14,7 @@ func main() {
   fmt.Println("Testing...")
 
   mnemonic.EntropyToPhraseAndSeed()
-  mnemonic.PhraseToEntropyAndSeed()
-  mnemonic.VerifyPhraseAndSeed()
+  mnemonic.PhraseToEntropyAndSeed("phrase")
+  mnemonic.VerifyPhraseAndSeed("phrase","phrase")
 
 }
-

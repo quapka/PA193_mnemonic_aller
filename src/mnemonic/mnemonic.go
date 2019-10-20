@@ -35,3 +35,14 @@ func VerifyPhraseAndSeed(phrase_to_verify,seed_to_verify string) int{
   }
   return -1
 }
+
+func PBKDF2_SHA512(password, salt []byte, count int)(output []byte, err int){
+
+}
+
+
+
+func PhraseToSeed(phrase,passphrase string)(seed []byte,err int){
+  seed , err = PBKDF2_SHA512([]byte(phrase),[]byte("mnemonic"+passphrase),2048)
+  return seed, err
+}

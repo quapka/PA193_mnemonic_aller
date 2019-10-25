@@ -18,6 +18,6 @@ func main() {
   mnemonic.PhraseToEntropyAndSeed("phrase")
   mnemonic.VerifyPhraseAndSeed("phrase","phrase")
 
-  tmp,_ := mnemonic.PhraseToSeed("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong","TREZOR")
+  tmp,_ := mnemonic.PhraseToSeed("password","TREZOR")
   fmt.Println(hex.EncodeToString(tmp))
 }

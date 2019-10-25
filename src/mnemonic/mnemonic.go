@@ -44,25 +44,23 @@ func PBKDF2_SHA512_F(password, salt []byte, count, l_counter int)([]byte, int){
   U_1_to_c := make([][]byte,count)
 
   var INT_i_l [4]byte
-  INT_i_l[0] = byte(l_counter >> 24)
-  INT_i_l[1] = byte(l_counter >> 16)
-  INT_i_l[2] = byte(l_counter >> 8)
-  INT_i_l[3] = byte(l_counter)
+  fmt.Println(hex.EncodeToString(INT_i_l[:4]))
+  INT_i_l[0] = byte((l_counter >> 24) & 0xff)
+  INT_i_l[1] = byte((l_counter >> 16) & 0xff)            /* INT (i) is a four-octet encoding of the integer i, most significant octet first. */
+  INT_i_l[2] = byte((l_counter >> 8) & 0xff)
+  INT_i_l[3] = byte((l_counter))
+  fmt.Println(hex.EncodeToString(INT_i_l[:4]),l_counter)
 
-
-  U_1_to_c[0] = make([]byte,64)
+  U_1_to_c[0] = make([]byte,64)                       /* U_1 = PRF (P, S || INT (i)) , */
   sha_512 := sha512.New()
   sha_512.Write(password)
-  // fmt.Println("password : ",hex.EncodeToString(password))
   sha_512.Write(append(salt,INT_i_l[:4]...))
-  // fmt.Println("1 salt : ",hex.EncodeToString(append(salt,INT_i_l[:4]...)))
   U_1_to_c[0] = sha_512.Sum(nil)
   sha_512.Reset()
-  // fmt.Println("U_1_to_c[0] : ",hex.EncodeToString(U_1_to_c[0]))
 
-  for i:=1 ; i<count ; i++ {
-    sha_512 = sha512.New()
-    U_1_to_c[i] = make([]byte,64)
+  for i:=1 ; i<count ; i++ {                          /* U_2 = PRF (P, U_1) , */
+    sha_512 = sha512.New()                            /* ... */
+    U_1_to_c[i] = make([]byte,64)                     /* U_c = PRF (P, U_{c-1}) . */
     sha_512.Write(password)
     sha_512.Write(U_1_to_c[i-1])
     U_1_to_c[i] = sha_512.Sum(nil)
@@ -72,7 +70,7 @@ func PBKDF2_SHA512_F(password, salt []byte, count, l_counter int)([]byte, int){
 
   output := make([]byte,64)
   output = U_1_to_c[0]
-  for i:=1; i<count ; i++ {
+  for i:=1; i<count ; i++ {         /* F (P, S, c, i) = U_1 \xor U_2 \xor ... \xor U_c */
     for j := range U_1_to_c[i]{
       output[j] ^= U_1_to_c[i][j]
     }
@@ -82,29 +80,40 @@ func PBKDF2_SHA512_F(password, salt []byte, count, l_counter int)([]byte, int){
   return output, 0
 }
 
+/* https://www.ietf.org/rfc/rfc2898.txt
 
+Translation variable with RFC :
+U_1, U_2, U_3 ... U_c is the array U_1_to_c, begin at 0 end at c-1
+T_1, T_2, T_3 ... T_l is the array T_1_to_l, begin at 0 end at l-1
+hLen is hLen
+dkLen is output_len
+P is password
+S is salt
+c is count
+INT(i) is INT_i_l
+l_counter in the program is the index until l in the RFC
+*/
 func PBKDF2_SHA512(password, salt []byte, count, output_len int)([]byte, int){
-  if(output_len != 64){ /* Length of SHA-512 */
+  if(output_len != 64){ /* Length of SHA-512 */  /* 1. If dkLen > (2^32 - 1) * hLen, output "derived key too long" and stop.*/
     return nil,-1
   } else {
-    fmt.Println(hex.EncodeToString(password),salt)
+    // fmt.Println(hex.EncodeToString(password))
     hLen := 64  /* Length of SHA-512 */
-    l := output_len / hLen  /* Should be equal to 1 !*/
-    // r := output_len -(l-1)*hLen     /* Should be equal to output_len, so 64 bytes */
+    l := output_len / hLen  /* Should be equal to 1 !*/     /* l = CEIL (dkLen / hLen) , */
+    // r := output_len -(l-1)*hLen     /* Should be equal to output_len, so 64 bytes */  /* r = dkLen - (l - 1) * hLen . */
 
     var T_1_to_l [][]byte
     T_1_to_l = make([][]byte,output_len)
 
-    for i:=0; i<l ; i++ {
-      T_1_to_l[i] = make([]byte,output_len)
-      T_1_to_l[i],_ = PBKDF2_SHA512_F(password, salt,count,i+1)
-
-    }
+    for i:=0; i<l ; i++ {                                                               /* T_1 = F (P, S, c, 1) ,*/
+      T_1_to_l[i] = make([]byte,output_len)                                             /* T_2 = F (P, S, c, 2) ,*/
+      T_1_to_l[i],_ = PBKDF2_SHA512_F(password, salt,count,i+1) /* i+1 because begin l in RFC        ...         */
+    }                                                                                   /* T_l = F (P, S, c, l) , */
 
     output := make([]byte,output_len)
     output = T_1_to_l[0]
     for i:=1 ; i<l ; i++ {
-      output = append(output,T_1_to_l[i]...)
+      output = append(output,T_1_to_l[i]...)                      /* DK = T_1 || T_2 ||  ...  || T_l<0..r-1> */
     }
     return output,0
   }
@@ -113,6 +122,8 @@ func PBKDF2_SHA512(password, salt []byte, count, output_len int)([]byte, int){
 
 
 func PhraseToSeed(phrase,passphrase string)(seed []byte,err int){
-  seed , err = PBKDF2_SHA512([]byte(phrase),[]byte("mnemonic"+passphrase),2048,64)
+  // seed , err = PBKDF2_SHA512([]byte(phrase),[]byte("mnemonic"+passphrase),2048,64)
+  passphrase=""
+  seed , err = PBKDF2_SHA512([]byte(phrase),[]byte("salt"),4096,64)
   return seed, err
 }

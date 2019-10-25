@@ -7,31 +7,61 @@ package main
 import (
   "fmt"
   "mnemonic"
+  "flag"
+  "os"
 )
 
 
+func displayMissingArg(msg string) {
+  os.Stderr.WriteString(msg + "\nUsage:\n")
+  flag.PrintDefaults()
+  os.Exit(1)
+}
+
+
 func main() {
-  fmt.Println("Testing...")
 
-  mnemonic.EntropyToPhraseAndSeed()
+  phrasePtr := flag.String("phrase", "", "Phrase to get entropy and seed (can't be set with --entropy)")
+  entropyPtr := flag.String("entropy", "", "Entropy to get phrase and seed (can't be set with --phrase)")
+  seedPtr := flag.String("seed", "", "Seed to be provided with phrase to verify them (requires --phrase to be set)")
+  wordlistFilePtr := flag.String("wordlist", "", "Path to wordlist (required)")
 
+  flag.Parse()
 
-  // Entropy from phrase
+  // Error handling
+  if *wordlistFilePtr == "" {
+    displayMissingArg("Need to set --wordlist")
+  } else if *phrasePtr == "" && *entropyPtr == "" {
+    displayMissingArg("Need to set --phrase or --entropy")
+  } else if *phrasePtr != "" && *entropyPtr != "" {
+    displayMissingArg("Can't set --phrase and --entropy")
+  } else if *seedPtr != "" && *phrasePtr == "" {
+    displayMissingArg("Requires to set --phrase")
+  }
 
-  // phrase := "legal winner thank year wave sausage worth useful legal winner thank yellow"
-  phrase := "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
-  wlfile := "wordlists/english.txt"
+  if *seedPtr != "" {
+    // Verify phrase and seed
+    mnemonic.VerifyPhraseAndSeed()
 
-  if entropy, e := mnemonic.PhraseToEntropyAndSeed(phrase, wlfile); e != nil {
-    fmt.Println(e)
+  } else if *phrasePtr != "" {
+    // Get the entropy and seed from the phrase
+    if entropy, e := mnemonic.PhraseToEntropyAndSeed(*phrasePtr, *wordlistFilePtr); e != nil {
+      fmt.Println(e)
+    } else {
+      fmt.Println("From phrase:", *phrasePtr)
+      fmt.Println("Entropy:", entropy)
+      fmt.Println("Seed: TODO")
+    }
+
   } else {
-    fmt.Println("Entropy:", entropy)
+    // Get the phrase and seed from the entropy
+    mnemonic.EntropyToPhraseAndSeed()
   }
 
 
-
-
-  mnemonic.VerifyPhraseAndSeed()
+  // fmt.Println("phrase has value ", *phrasePtr)
+  // fmt.Println("entropy has value ", *entropyPtr)
+  // fmt.Println("seed has value ", *seedPtr)
 
 }
 

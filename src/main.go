@@ -7,6 +7,7 @@ package main
 import (
   "fmt"
   "./mnemonic"
+  "encoding/hex"
 )
 
 
@@ -17,4 +18,6 @@ func main() {
   mnemonic.PhraseToEntropyAndSeed("phrase")
   mnemonic.VerifyPhraseAndSeed("phrase","phrase")
 
+  tmp,_ := mnemonic.PhraseToSeed("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong","TREZOR")
+  fmt.Println(hex.EncodeToString(tmp))
 }

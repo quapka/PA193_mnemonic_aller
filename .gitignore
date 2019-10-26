@@ -10,9 +10,11 @@
 *.b2z
 *.bak
 bin/*
+
+# media files
 *.jpg
-*.JPG
 *.jpeg
+*.JPG
 *.JPEG
 *.png
 *.PNG

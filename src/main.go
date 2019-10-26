@@ -42,7 +42,7 @@ func main() {
 
   if *seedPtr != "" {
     // Verify phrase and seed
-    mnemonic.VerifyPhraseAndSeed()
+    mnemonic.VerifyPhraseAndSeed("TMP CHARACTER CHAIN","NEED TO BE CHANGED",*wordlistFilePtr)
 
   } else if *phrasePtr != "" {
     // Get the entropy and seed from the phrase

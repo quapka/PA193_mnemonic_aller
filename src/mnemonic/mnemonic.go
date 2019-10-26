@@ -113,11 +113,11 @@ func PhraseToEntropyAndSeed(phrase string, wlfile string) (string, error) {
 }
 
 
-func VerifyPhraseAndSeed(phrase_to_verify,seed_to_verify string) int{
+func VerifyPhraseAndSeed(phrase_to_verify,seed_to_verify,wlfile string) int{
   // TODO
   // fmt.Println("TODO entropy_to_mnemonic")
   var seed string
-  _, seed = PhraseToEntropyAndSeed(phrase_to_verify)
+  seed,_ = PhraseToEntropyAndSeed(phrase_to_verify,wlfile)  /* WARNING NEED THE SEED IN THE RETURN NOT ONLY THE ERROR */
   if seed_to_verify==seed{
     fmt.Println("The phrase and the seed correspond !!")
     return 0

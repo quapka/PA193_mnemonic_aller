@@ -37,7 +37,7 @@ func EntropyToPhraseAndSeed(entropy string, dictFilepath string) (phrase, seed s
 	ENT := bits.Len(uint(bytes[0])) + (len(bytes)-1)*8
 	inRange := lowerENTBound <= ENT && ENT <= upperENTBound
 	if !inRange {
-		return "", "", newENTNotInRange()
+		return "", "", newENTNotInRangeError()
 	}
 
 	//

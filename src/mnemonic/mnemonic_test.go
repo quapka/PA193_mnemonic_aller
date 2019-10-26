@@ -37,7 +37,7 @@ func TestENTIsInRange(t *testing.T) {
 	// FIXME smaller, in range, higher, catch off by one errors
 	// fairly small input
 	entropy := "FF"
-	expectedErr := newENTNotInRange()
+	expectedErr := newENTNotInRangeError()
 	// FIXME
 	_, _, err := EntropyToPhraseAndSeed(entropy, "english.txt")
 	if err.Error() != expectedErr.Error() {

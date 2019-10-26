@@ -25,6 +25,6 @@ func newEntropyIsEmptyError() error {
 	return errors.New(errEntropyIsEmpty)
 }
 
-func newENTNotInRange() error {
+func newENTNotInRangeError() error {
 	return errors.New(fmt.Sprintf(errENTNotInRange, lowerENTBound, upperENTBound))
 }

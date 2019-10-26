@@ -23,15 +23,14 @@ const upperENTBound = 256
 // params:
 // string entropy is a string of hexadecimal values
 func EntropyToPhraseAndSeed(entropy string, dictFilepath string) (phrase, seed string, err error) {
+	if len(entropy) == 0 {
+		return "", "", newEntropyIsEmptyError()
+	}
+
 	// FIXME test on huge inputs
 	bytes, err := hex.DecodeString(entropy)
 	if err != nil {
 		return "", "", newEntropyIsNotHexadecimalError()
-	}
-
-	// FIXME refactor order of checks, check for emptiness first
-	if len(bytes) == 0 {
-		return "", "", newEntropyIsEmptyError()
 	}
 
 	ENT := bits.Len(uint(bytes[0])) + (len(bytes)-1)*8

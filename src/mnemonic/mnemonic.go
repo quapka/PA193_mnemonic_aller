@@ -71,9 +71,8 @@ func EntropyToPhraseAndSeed(entropy string, dictFilepath string) (phrase, seed s
 
 	dict, err := os.Open(dictFilepath) // For read access.
 	if err != nil {
-		// log.Fatal(err)
-		// FIXME better message and consistent
-		return "", "", errors.New("Cannot open the dictionary file")
+		// TODO bubble the original error? Or simply in a wrapper?
+		return "", "", newOpenWordlistError(dictFilepath)
 	}
 	// make sure the file is properly closed
 	defer dict.Close()

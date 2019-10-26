@@ -86,5 +86,23 @@ func TestEntropyIsHexadecimal(t *testing.T) {
 	if seed != expectedSeed {
 		t.Error(gotExp(seed, expectedSeed))
 	}
+}
 
+func TestCannotOpenWordlistFile(t *testing.T) {
+	entropy := "B7CB8EE904628CEC2B6779C0FB8B1B91" // 2**127 - 1
+	phrase, seed, err := EntropyToPhraseAndSeed(entropy, "does/not/exist")
+	expectedPhrase := ""
+	expectedSeed := ""
+	expectedErr := newOpenWordlistError("does/not/exist")
+
+	if err.Error() != expectedErr.Error() {
+		t.Error(gotExp(string(err.Error()), string(expectedErr.Error())))
+	}
+	if phrase != expectedPhrase {
+		t.Error(gotExp(phrase, expectedPhrase))
+	}
+
+	if seed != expectedSeed {
+		t.Error(gotExp(seed, expectedSeed))
+	}
 }

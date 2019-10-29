@@ -20,6 +20,8 @@ import (
 const lowerENTBound = 128
 const upperENTBound = 256
 
+// FIXME add documenation of functions
+
 // entropy can be of various length, therefore it needs to a slice not an array
 // FIXME check whether the underlying entropy array is changed, if so make a copy
 // params:
@@ -141,8 +143,6 @@ func PhraseToEntropyAndSeed(phrase string, wlfile string) (string, error) {
 }
 
 func VerifyPhraseAndSeed(phrase_to_verify, seed_to_verify, wlfile string) int {
-	// TODO
-	// fmt.Println("TODO entropy_to_mnemonic")
 	var seed string
 	seed, _ = PhraseToEntropyAndSeed(phrase_to_verify, wlfile) /* WARNING NEED THE SEED IN THE RETURN NOT ONLY THE ERROR */
 	if seed_to_verify == seed {

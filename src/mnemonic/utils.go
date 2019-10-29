@@ -23,14 +23,12 @@ func cleanInputEntropy(entropy string) ([]byte, error) {
 		return nil, newEntropyIsNotHexadecimalError()
 	}
 
-	//ENT := bits.Len(uint(bytes[0])) + (len(bytes)-1)*8
 	ENT := getBinaryLength(bytes)
-	inRange := lowerENTBound <= ENT && ENT <= upperENTBound
-	if !inRange {
+	notInRange := !(lowerENTBound <= ENT && ENT <= upperENTBound)
+	if notInRange {
 		return nil, newENTNotInRangeError()
 	}
 
-	//
 	if ENT%32 != 0 {
 		return nil, newEntropyNotDivisibleBy32Error(ENT)
 	}
@@ -45,7 +43,8 @@ func calculateCheckSum(bytes []byte) string {
 	hash := sha256.Sum256(bytes)
 	ENT := getBinaryLength(bytes)
 	checkSumLen := ENT / 32
-	checkSum := hash[0] >> (8 - checkSumLen) // checkSumLen is always between 4-8
+	// checkSumLen is always between 4-8
+	checkSum := hash[0] >> (8 - checkSumLen)
 	// create formatting string like "%04s" - "%08s"
 	checkSumFormat := fmt.Sprintf("%%0%ds", checkSumLen)
 	checkSumBin := fmt.Sprintf(checkSumFormat, strconv.FormatInt(int64(checkSum), 2))
@@ -76,7 +75,6 @@ func createGroups(binary string) (groups []string, err error) {
 		group := binary[i*groupSize : (i+1)*groupSize]
 		groups = append(groups, group)
 	}
-	// fmt.Println(groups)
 	return groups, nil
 }
 
@@ -89,10 +87,6 @@ func createIndices(groups []string) (indices []int64, err error) {
 			return nil, errors.New("Cannot creat the phrase")
 		}
 		indices = append(indices, ind)
-
-		// phrase += words[ind]
-		// // FIXME remove trailing space
-		// phrase += " "
 	}
 	return indices, nil
 }
@@ -130,7 +124,7 @@ func validateWordlist(wordList []string) (bool, error) {
 	const expectedSize = 2048
 	actualSize := len(wordList)
 	if actualSize != expectedSize {
-		// FIXME
+		// FIXME new error
 		return false, errors.New("Not enough words in the wordlist")
 	}
 	return valid, nil
@@ -143,10 +137,11 @@ func loadWordlist(filepath string) ([]string, error) {
 		return nil, newOpenWordlistError(filepath)
 	}
 	defer dict.Close()
-	// read the words
+
 	scanner := bufio.NewScanner(dict)
 	scanner.Split(bufio.ScanLines)
 	var words []string
+
 	for scanner.Scan() {
 		word := cleanLine(scanner.Text())
 		if !validateWord(word) {
@@ -156,7 +151,6 @@ func loadWordlist(filepath string) ([]string, error) {
 		words = append(words, word)
 	}
 	// FIXME check for an error while reading
-	// make sure the file is properly closed
 	return words, nil
 }
 

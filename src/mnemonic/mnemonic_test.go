@@ -14,6 +14,7 @@ import (
 
 // FIXME rewrite table tests to have inplace struct definition
 // FIXME testing for errors is not done nicely - problem with calling .Error() on 'nil'
+// FIXME nicely row in case error in table tests
 func gotExp(got, exp string) string {
 	return fmt.Sprintf("\nGot: %s\nExp: %s\n", got, exp)
 }
@@ -67,15 +68,13 @@ func TestENTIsInRange(t *testing.T) {
 	if err.Error() != expectedErr.Error() {
 		t.Error(gotExp(err.Error(), expectedErr.Error()))
 	}
-	// smaller by 1 bajt
+	// smaller by 1 byte
 	entropy = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" // 2**127 - 1
 	_, _, err = EntropyToPhraseAndSeed(entropy, "", "english.txt")
 	if err.Error() != expectedErr.Error() {
 		t.Error(gotExp(err.Error(), expectedErr.Error()))
 	}
-	// bigger by 1
-	// FIXME different output this and Go Playground version, difference between 01
-	// or 1 in the beginning
+	// bigger by 1 byte
 	entropy = "000000000000000000000000000000000000000000000000000000000000000000" // 2 ** 256
 	_, _, err = EntropyToPhraseAndSeed(entropy, "", "english.txt")
 	if err.Error() != expectedErr.Error() {
@@ -98,9 +97,8 @@ func TestEntropyIsHexadecimal(t *testing.T) {
 	expectedPhrase := ""
 	expectedSeed := ""
 	expectedErr := newEntropyIsNotHexadecimalError()
-	// Comparing the actual error string
+
 	if err.Error() != expectedErr.Error() {
-		// if errors.Is(err, expectedErr) {
 		t.Error(fmt.Sprintf("\nGot: %s\nExp: %s\n", err, expectedErr))
 	}
 	if phrase != expectedPhrase {
@@ -226,7 +224,6 @@ func TestFunc_getBinaryLength(t *testing.T) {
 	}
 }
 
-// TODO finish
 func TestFunc_calculateCheckSum(t *testing.T) {
 	testData := []struct {
 		in_bytes     []byte
@@ -347,8 +344,6 @@ func TestFunc_createGroups(t *testing.T) {
 
 	for i, td := range testData {
 		got, _ := createGroups(td.input)
-		// fmt.Println("Got")
-		// fmt.Println(got)
 		if !reflect.DeepEqual(got, td.expOutput) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
 			t.Error(gotExp(strings.Join(got, ", "), strings.Join(td.expOutput, ", ")))
@@ -471,6 +466,37 @@ func TestFunc_validateWord(t *testing.T) {
 }
 
 var wlfile = "../../wordlists/english.txt"
+
+func TestPhraseToEntropyAndSeed(t *testing.T) {
+
+	for _, v := range testVectors {
+		entropy, e := PhraseToEntropyAndSeed(v.phrase, wlfile)
+		if e != nil {
+			t.Errorf("Phrase to entropy and seed function failed: %s", e)
+		}
+		if entropy != v.entropy {
+			t.Errorf("Got unexpected entropy. Expected %s, got: %s", v.entropy, entropy)
+		}
+	}
+}
+
+func TestEntropyToPhraseAndSeed(t *testing.T) {
+	for i, tv := range testVectors {
+		phrase, seed, err := EntropyToPhraseAndSeed(tv.entropy, "TREZOR", wlfile)
+		if phrase != tv.phrase {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(gotExp(phrase, tv.phrase))
+		}
+		if seed != tv.seed {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(gotExp(seed, tv.seed))
+		}
+		if equal, reason := equalError(err, nil); !equal {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(reason)
+		}
+	}
+}
 
 var testVectors = []struct {
 	entropy string
@@ -598,38 +624,6 @@ var testVectors = []struct {
 		"01f5bced59dec48e362f2c45b5de68b9fd6c92c6634f44d6d40aab69056506f0e35524a518034ddc1192e1dacd32c1ed3eaa3c3b131c88ed8e7e54c49a5d0998",
 	},
 }
-
-func TestPhraseToEntropyAndSeed(t *testing.T) {
-
-	for _, v := range testVectors {
-		entropy, e := PhraseToEntropyAndSeed(v.phrase, wlfile)
-		if e != nil {
-			t.Errorf("Phrase to entropy and seed function failed: %s", e)
-		}
-		if entropy != v.entropy {
-			t.Errorf("Got unexpected entropy. Expected %s, got: %s", v.entropy, entropy)
-		}
-	}
-}
-
-func TestEntropyToPhraseAndSeed(t *testing.T) {
-	for i, tv := range testVectors {
-		phrase, seed, err := EntropyToPhraseAndSeed(tv.entropy, "TREZOR", wlfile)
-		if phrase != tv.phrase {
-			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(phrase, tv.phrase))
-		}
-		if seed != tv.seed {
-			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(seed, tv.seed))
-		}
-		if equal, reason := equalError(err, nil); !equal {
-			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(reason)
-		}
-	}
-}
-
 var validWordlist = []string{
 	"abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract",
 	"absurd", "abuse", "access", "accident", "account", "accuse", "achieve", "acid",

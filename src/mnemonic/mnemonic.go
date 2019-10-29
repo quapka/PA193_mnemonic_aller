@@ -279,7 +279,7 @@ func PBKDF2_SHA512(password, salt []byte, count, output_len int) ([]byte, int) {
 	}
 }
 
-/* This fonction converts a mnemonic prhase to the corresponding seed using PBKDF2. */
+/* This function converts a mnemonic phrase to the corresponding seed using PBKDF2. */
 func PhraseToSeed(phrase, passphrase string) (seed []byte, err int) {
 	seed, err = PBKDF2_SHA512([]byte(phrase), []byte("mnemonic"+passphrase), 2048, 64)
 	if err < 0 {

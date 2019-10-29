@@ -20,7 +20,7 @@ func gotExp(got, exp string) string {
 
 func TestEntropyIsNotEmpty(t *testing.T) {
 	entropy := ""
-	phrase, seed, err := EntropyToPhraseAndSeed(entropy, "english.txt")
+	phrase, seed, err := EntropyToPhraseAndSeed(entropy, "", "english.txt")
 
 	expectedPhrase := ""
 	expectedSeed := ""
@@ -43,13 +43,13 @@ func TestENTIsInRange(t *testing.T) {
 	entropy := "FF"
 	expectedErr := newENTNotInRangeError()
 	// FIXME
-	_, _, err := EntropyToPhraseAndSeed(entropy, "english.txt")
+	_, _, err := EntropyToPhraseAndSeed(entropy, "", "english.txt")
 	if err.Error() != expectedErr.Error() {
 		t.Error(gotExp(err.Error(), expectedErr.Error()))
 	}
 	// smaller by 1
 	entropy = "7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" // 2**127 - 1
-	_, _, err = EntropyToPhraseAndSeed(entropy, "english.txt")
+	_, _, err = EntropyToPhraseAndSeed(entropy, "", "english.txt")
 	if err.Error() != expectedErr.Error() {
 		t.Error(gotExp(err.Error(), expectedErr.Error()))
 	}
@@ -57,7 +57,7 @@ func TestENTIsInRange(t *testing.T) {
 	// FIXME different output this and Go Playground version, difference between 01
 	// or 1 in the beginning
 	entropy = "010000000000000000000000000000000000000000000000000000000000000000" // 2 ** 256
-	_, _, err = EntropyToPhraseAndSeed(entropy, "english.txt")
+	_, _, err = EntropyToPhraseAndSeed(entropy, "", "english.txt")
 	if err.Error() != expectedErr.Error() {
 		t.Error(gotExp(err.Error(), expectedErr.Error()))
 	}
@@ -65,7 +65,7 @@ func TestENTIsInRange(t *testing.T) {
 
 func TestENTIsMultipleOf32x(t *testing.T) {
 	entropy := "0800000000000000000000000000000000000000000000"
-	_, _, err := EntropyToPhraseAndSeed(entropy, "english.txt")
+	_, _, err := EntropyToPhraseAndSeed(entropy, "", "english.txt")
 	expectedErr := newEntropyNotDivisibleBy32Error(180)
 	if err.Error() != expectedErr.Error() {
 		t.Error(gotExp(err.Error(), expectedErr.Error()))
@@ -74,7 +74,7 @@ func TestENTIsMultipleOf32x(t *testing.T) {
 
 func TestEntropyIsHexadecimal(t *testing.T) {
 	entropy := "XX"
-	phrase, seed, err := EntropyToPhraseAndSeed(entropy, "english.txt")
+	phrase, seed, err := EntropyToPhraseAndSeed(entropy, "", "english.txt")
 	expectedPhrase := ""
 	expectedSeed := ""
 	expectedErr := newEntropyIsNotHexadecimalError()
@@ -94,7 +94,7 @@ func TestEntropyIsHexadecimal(t *testing.T) {
 
 func TestCannotOpenWordlistFile(t *testing.T) {
 	entropy := "B7CB8EE904628CEC2B6779C0FB8B1B91" // 2**127 - 1
-	phrase, seed, err := EntropyToPhraseAndSeed(entropy, "does/not/exist")
+	phrase, seed, err := EntropyToPhraseAndSeed(entropy, "", "does/not/exist")
 	expectedPhrase := ""
 	expectedSeed := ""
 	expectedErr := newOpenWordlistError("does/not/exist")

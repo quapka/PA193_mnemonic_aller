@@ -24,7 +24,7 @@ const upperENTBound = 256
 // FIXME check whether the underlying entropy array is changed, if so make a copy
 // params:
 // string entropy is a string of hexadecimal values
-func EntropyToPhraseAndSeed(entropy string, dictFilepath string) (phrase, seed string, err error) {
+func EntropyToPhraseAndSeed(entropy, passphrase, dictFilepath string) (phrase, seed string, err error) {
 	bytes, err := cleanInputEntropy(entropy)
 	if err != nil {
 		return "", "", err
@@ -280,7 +280,7 @@ func PBKDF2_SHA512(password, salt []byte, count, output_len int) ([]byte, int) {
 }
 
 /* This function converts a mnemonic phrase to the corresponding seed using PBKDF2. */
-func PhraseToSeed(phrase, passphrase string) (seed []byte, err int) {
+func phraseToSeed(phrase, passphrase string) (seed []byte, err int) {
 	seed, err = PBKDF2_SHA512([]byte(phrase), []byte("mnemonic"+passphrase), 2048, 64)
 	if err < 0 {
 		fmt.Fprintf(os.Stderr, "Error in PBKDF2_SHA512")

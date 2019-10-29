@@ -17,11 +17,7 @@ import (
 	"strings"
 )
 
-const lowerENTBound = 128
-const upperENTBound = 256
-
 // FIXME add documenation of functions
-
 // entropy can be of various length, therefore it needs to a slice not an array
 // FIXME check whether the underlying entropy array is changed, if so make a copy
 // params:

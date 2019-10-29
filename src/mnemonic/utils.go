@@ -24,7 +24,7 @@ func cleanInputEntropy(entropy string) ([]byte, error) {
 	}
 
 	ENT := getBinaryLength(bytes)
-	notInRange := !(lowerENTBound <= ENT && ENT <= upperENTBound)
+	notInRange := !(128 <= ENT && ENT <= 256)
 	if notInRange {
 		return nil, newENTNotInRangeError()
 	}

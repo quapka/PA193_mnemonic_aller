@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"math/bits"
 	"os"
 	"regexp"
 	"strconv"
@@ -39,7 +38,7 @@ func cleanInputEntropy(entropy string) ([]byte, error) {
 }
 
 func getBinaryLength(bytes []byte) int {
-	return bits.Len(uint(bytes[0])) + (len(bytes)-1)*8
+	return len(bytes) * 8
 }
 
 func calculateCheckSum(bytes []byte) string {

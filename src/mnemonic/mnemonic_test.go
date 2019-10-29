@@ -67,8 +67,8 @@ func TestENTIsInRange(t *testing.T) {
 	if err.Error() != expectedErr.Error() {
 		t.Error(gotExp(err.Error(), expectedErr.Error()))
 	}
-	// smaller by 1
-	entropy = "7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" // 2**127 - 1
+	// smaller by 1 bajt
+	entropy = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" // 2**127 - 1
 	_, _, err = EntropyToPhraseAndSeed(entropy, "", "english.txt")
 	if err.Error() != expectedErr.Error() {
 		t.Error(gotExp(err.Error(), expectedErr.Error()))
@@ -86,7 +86,7 @@ func TestENTIsInRange(t *testing.T) {
 func TestENTIsMultipleOf32(t *testing.T) {
 	entropy := "0800000000000000000000000000000000000000000000"
 	_, _, err := EntropyToPhraseAndSeed(entropy, "", "english.txt")
-	expectedErr := newEntropyNotDivisibleBy32Error(180)
+	expectedErr := newEntropyNotDivisibleBy32Error(184)
 	if err.Error() != expectedErr.Error() {
 		t.Error(gotExp(err.Error(), expectedErr.Error()))
 	}
@@ -140,8 +140,8 @@ func TestFunc_cleanInputEntropy(t *testing.T) {
 	}{
 		{in_entropy: "", out_bytes: nil, out_error: newEntropyIsEmptyError()},
 		{in_entropy: "FF", out_bytes: nil, out_error: newENTNotInRangeError()},
-		{in_entropy: "010000000000000000000000000000000000000000000000000000000000000000", out_error: newENTNotInRangeError()},
-		{in_entropy: "0800000000000000000000000000000000000000000000", out_error: newEntropyNotDivisibleBy32Error(180)},
+		{in_entropy: "000000000000000000000000000000000000000000000000000000000000000000", out_error: newENTNotInRangeError()},
+		{in_entropy: "0800000000000000000000000000000000000000000000", out_error: newEntropyNotDivisibleBy32Error(184)},
 		{in_entropy: "XX", out_bytes: nil, out_error: newEntropyIsNotHexadecimalError()},
 		{in_entropy: "B7CB8EE904628CEC2B6779C0FB8B1B91", out_bytes: []byte{0xB7, 0xCB, 0x8E, 0xE9, 0x04, 0x62, 0x8C, 0xEC, 0x2B, 0x67, 0x79, 0xC0, 0xFB, 0x8B, 0x1B, 0x91}, out_error: nil}, // 2**127 - 1
 	}
@@ -172,10 +172,10 @@ func TestFunc_getBinaryLength(t *testing.T) {
 		expectedLen int
 	}
 	testData := []testTemplate{
-		{input: []byte{0x00}, expectedLen: 0},
-		{input: []byte{0x05}, expectedLen: 3},
-		{input: []byte{0x05, 0x00}, expectedLen: 11},
-		{input: []byte{0x01, 0x00, 0x00, 0x00, 0x00}, expectedLen: 33},
+		{input: []byte{0x00}, expectedLen: 8},
+		{input: []byte{0x05}, expectedLen: 8},
+		{input: []byte{0x05, 0x00}, expectedLen: 16},
+		{input: []byte{0x01, 0x00, 0x00, 0x00, 0x00}, expectedLen: 40},
 		{input: []byte{0xAC, 0xFB, 0x96, 0x23, 0xE6,
 			0x9A, 0x1F, 0xF0, 0xF7, 0xB7,
 			0x2E, 0xDE, 0xED, 0x0A, 0x03,

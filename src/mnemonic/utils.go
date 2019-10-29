@@ -12,6 +12,9 @@ import (
 	"strings"
 )
 
+const lowerENTBound = 128
+const upperENTBound = 256
+
 func cleanInputEntropy(entropy string) ([]byte, error) {
 	if len(entropy) == 0 {
 		return nil, newEntropyIsEmptyError()
@@ -24,7 +27,7 @@ func cleanInputEntropy(entropy string) ([]byte, error) {
 	}
 
 	ENT := getBinaryLength(bytes)
-	notInRange := !(128 <= ENT && ENT <= 256)
+	notInRange := !(lowerENTBound <= ENT && ENT <= upperENTBound)
 	if notInRange {
 		return nil, newENTNotInRangeError()
 	}

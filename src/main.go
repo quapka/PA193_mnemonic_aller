@@ -5,7 +5,6 @@
 package main
 
 import (
-	"encoding/hex"
 	"flag"
 	"fmt"
 	"mnemonic"
@@ -22,6 +21,7 @@ func main() {
 
 	phrasePtr := flag.String("phrase", "", "Phrase to get entropy and seed (can't be set with --entropy)")
 	entropyPtr := flag.String("entropy", "", "Entropy to get phrase and seed (can't be set with --phrase)")
+	passphrasePtr := flag.String("passphrase", "", "Passphrase to get phrase and seed")
 	seedPtr := flag.String("seed", "", "Seed to be provided with phrase to verify them (requires --phrase to be set)")
 	wordlistFilePtr := flag.String("wordlist", "", "Path to wordlist (required)")
 
@@ -54,13 +54,13 @@ func main() {
 
 	} else {
 		// Get the phrase and seed from the entropy
-		mnemonic.EntropyToPhraseAndSeed()
+		if phrase, seed, err := mnemonic.EntropyToPhraseAndSeed(*entropyPtr, *passphrasePtr, *wordlistFilePtr); err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("From entropy: ", *entropyPtr)
+			fmt.Println("From passphrase: ", *passphrasePtr)
+			fmt.Println("Phrase: ", phrase)
+			fmt.Println("Seed: ", seed)
+		}
 	}
-
-	// fmt.Println("phrase has value ", *phrasePtr)
-	// fmt.Println("entropy has value ", *entropyPtr)
-	// fmt.Println("seed has value ", *seedPtr)
-
-	tmp, _ := mnemonic.PhraseToSeed("void come effort suffer camp survey warrior heavy shoot primary clutch crush open amazing screen patrol group space point ten exist slush involve unfold", "TREZOR")
-	fmt.Println(hex.EncodeToString(tmp))
 }

@@ -11,6 +11,7 @@ const errEntropyIsNotHexadecimal = "PA193 mnemonic: The 'entropy' is not a hexad
 const errEntropyIsEmpty = "PA193 mnemonic: The 'entropy' is empty."
 const errENTNotInRange = "PA193 mnemonic: The 'entropy' bit-length is not in the range %d-%d."
 const errOpenWordlistError = "PA193_mnemonic: Could not open the wordlist file '%s'."
+const errInvalidWordError = "PA193 mnemonic: Wordlist contains an invalid word '%s'."
 
 func newEntropyNotDivisibleBy32Error(length int) error {
 	// FIXME add check for too big value
@@ -32,4 +33,8 @@ func newENTNotInRangeError() error {
 
 func newOpenWordlistError(dictFilepath string) error {
 	return errors.New(fmt.Sprintf(errOpenWordlistError, dictFilepath))
+}
+
+func newInvalidWordError(word string) error {
+	return errors.New(fmt.Sprintf(errInvalidWordError, word))
 }

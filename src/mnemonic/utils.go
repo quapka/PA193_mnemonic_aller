@@ -148,7 +148,7 @@ func loadWordlist(filepath string) ([]string, error) {
 	for scanner.Scan() {
 		word := cleanLine(scanner.Text())
 		if !validateWord(word) {
-			return nil, errors.New("Invalid word found")
+			return nil, newInvalidWordError(word)
 		}
 		// FIXME what does the line consist of?
 		words = append(words, word)

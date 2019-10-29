@@ -399,7 +399,7 @@ func TestFunc_loadWordList(t *testing.T) {
 	}{
 		{in_filepath: "test-data/valid-wordlist.txt", out_words: validWordlist, out_error: nil},
 		{in_filepath: "test-data/does-not-exist.txt", out_words: nil, out_error: newOpenWordlistError("test-data/does-not-exist.txt")},
-		// {in_filepath: "test-data/invalid-wordlist.txt", out_words: []string, out_error: newOpenWordlistError("test-data/does-not-exist.txt")},
+		{in_filepath: "test-data/invalid-word-wordlist.txt", out_words: nil, out_error: newInvalidWordError("invalid invalid")},
 	}
 	for i, td := range testData {
 		words, err := loadWordlist(td.in_filepath)

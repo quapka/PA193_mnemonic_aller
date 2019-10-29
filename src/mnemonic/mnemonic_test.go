@@ -76,14 +76,14 @@ func TestENTIsInRange(t *testing.T) {
 	// bigger by 1
 	// FIXME different output this and Go Playground version, difference between 01
 	// or 1 in the beginning
-	entropy = "010000000000000000000000000000000000000000000000000000000000000000" // 2 ** 256
+	entropy = "000000000000000000000000000000000000000000000000000000000000000000" // 2 ** 256
 	_, _, err = EntropyToPhraseAndSeed(entropy, "", "english.txt")
 	if err.Error() != expectedErr.Error() {
 		t.Error(gotExp(err.Error(), expectedErr.Error()))
 	}
 }
 
-func TestENTIsMultipleOf32x(t *testing.T) {
+func TestENTIsMultipleOf32(t *testing.T) {
 	entropy := "0800000000000000000000000000000000000000000000"
 	_, _, err := EntropyToPhraseAndSeed(entropy, "", "english.txt")
 	expectedErr := newEntropyNotDivisibleBy32Error(180)

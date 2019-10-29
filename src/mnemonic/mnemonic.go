@@ -43,11 +43,14 @@ func EntropyToPhraseAndSeed(entropy, passphrase, dictFilepath string) (phrase, s
 	if err != nil {
 		return "", "", err
 	}
+	// create the mnemonic phrase
 	phraseWords, _ := createPhraseWords(indices, wordList)
+	phrase = strings.Join(phraseWords, " ")
+	// create the seed value
+	seedBytes, _ := phraseToSeed(phrase, passphrase)
+	seed = hex.EncodeToString(seedBytes)
 
-	seed = ""
-
-	return strings.Join(phraseWords, " "), seed, nil
+	return phrase, seed, nil
 }
 
 func PhraseToEntropyAndSeed(phrase string, wlfile string) (string, error) {

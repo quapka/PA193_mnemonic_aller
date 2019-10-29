@@ -599,7 +599,7 @@ var testVectors = []struct {
 	},
 }
 
-func TestEntropyToPhraseAndSeed(t *testing.T) {
+func TestPhraseToEntropyAndSeed(t *testing.T) {
 
 	for _, v := range testVectors {
 		entropy, e := PhraseToEntropyAndSeed(v.phrase, wlfile)
@@ -608,6 +608,24 @@ func TestEntropyToPhraseAndSeed(t *testing.T) {
 		}
 		if entropy != v.entropy {
 			t.Errorf("Got unexpected entropy. Expected %s, got: %s", v.entropy, entropy)
+		}
+	}
+}
+
+func TestEntropyToPhraseAndSeed(t *testing.T) {
+	for i, tv := range testVectors {
+		phrase, seed, err := EntropyToPhraseAndSeed(tv.entropy, "TREZOR", wlfile)
+		if phrase != tv.phrase {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(gotExp(phrase, tv.phrase))
+		}
+		if seed != tv.seed {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(gotExp(seed, tv.seed))
+		}
+		if equal, reason := equalError(err, nil); !equal {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(reason)
 		}
 	}
 }

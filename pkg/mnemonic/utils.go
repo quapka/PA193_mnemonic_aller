@@ -2,7 +2,9 @@ package mnemonic
 
 import (
 	"bufio"
+	"crypto/hmac"
 	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -10,8 +12,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"crypto/hmac"
-	"crypto/sha512"
 )
 
 const lowerENTBound = 128
@@ -240,7 +240,6 @@ func Pbkdf2Sha512F(password, salt []byte, count, lCounter int) ([]byte, int) {
 	}
 	return output, 0
 }
-
 
 // Pbkdf2Sha512
 // Implementation of Pbkdf2Sha512 according to the RFC 2898

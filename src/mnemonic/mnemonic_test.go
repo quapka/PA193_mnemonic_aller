@@ -479,6 +479,7 @@ func TestFunc_validateWordlist(t *testing.T) {
 	}{
 		{in_wordlist: []string{"duplicates", "duplicates"}, out_valid: false, out_error: newWordlistContainsDuplicatesError()},
 		{in_wordlist: []string{"not", "enough", "words"}, out_valid: false, out_error: newNotExpectedWordlistSizeError()},
+		{in_wordlist: validWordlist, out_valid: true, out_error: nil},
 	}
 	for i, td := range testData {
 		valid, err := validateWordlist(td.in_wordlist)

@@ -5,16 +5,23 @@
 PA193_mnemonic_aller
 ====================
 
-Language: Go
+A golang implementation of the [BIP-39 specification](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki).
 
+## Install
 
 TODO
-====
 
-Testing:
-- check memory requirements (run with restricted memory)
-- reason about side-channels and constant-time algorithms (is there any leakage?)
-- (TDD) unit test everything (extreme values - min, max, pattern values)
-- check inputs provided by the users (can they produce bug/error - e.g. end up in an error message?)
-- go through this [list](https://github.com/mre/awesome-static-analysis#go) and maybe include in out CI
-- (check for change in the size of the binary)
+## Use the command line interface
+
+TODO put the --help as well here
+
+## Use the programmatic interface
+
+TODO
+
+## Credits
+
+The test vectors come from the python implementation made by the Trezor team: [https://github.com/trezor/python-mnemonic/blob/master/vectors.json](https://github.com/trezor/python-mnemonic/blob/master/vectors.json)
+
+The wordlist is from the [BIP-39 spec](https://github.com/bitcoin/bips/blob/master/bip-0039/bip-0039-wordlists.md).
+

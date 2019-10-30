@@ -7,7 +7,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"mnemonic"
+	"github.com/quapka/PA193_mnemonic_aller/pkg/mnemonic"
 	"os"
 )
 
@@ -44,12 +44,12 @@ func main() {
 
 	} else if *phrasePtr != "" {
 		// Get the entropy and seed from the phrase
-		if entropy, e := mnemonic.PhraseToEntropyAndSeed(*phrasePtr, *wordlistFilePtr); e != nil {
-			fmt.Println(e)
+		if entropy, seed, err := mnemonic.PhraseToEntropyAndSeed(*phrasePtr, *passphrasePtr, *wordlistFilePtr); err != nil {
+			fmt.Println(err)
 		} else {
 			fmt.Println("From phrase:", *phrasePtr)
 			fmt.Println("Entropy:", entropy)
-			fmt.Println("Seed: TODO")
+			fmt.Println("Seed:", seed)
 		}
 
 	} else {

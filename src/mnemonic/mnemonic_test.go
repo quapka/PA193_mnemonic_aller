@@ -471,6 +471,28 @@ func TestFunc_validateWord(t *testing.T) {
 	}
 }
 
+func TestFunc_validateWordlist(t *testing.T) {
+	testData := []struct {
+		in_wordlist []string
+		out_valid   bool
+		out_error   error
+	}{
+		{in_wordlist: []string{"duplicates", "duplicates"}, out_valid: false, out_error: newWordlistContainsDuplicatesError()},
+		{in_wordlist: []string{"not", "enough", "words"}, out_valid: false, out_error: newNotExpectedWordlistSizeError()},
+	}
+	for i, td := range testData {
+		valid, err := validateWordlist(td.in_wordlist)
+		if valid != td.out_valid {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(gotExp(strconv.FormatBool(valid), strconv.FormatBool(td.out_valid)))
+		}
+		if equal, reason := equalError(err, td.out_error); !equal {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(reason)
+		}
+	}
+}
+
 var wlfile = "../../wordlists/english.txt"
 
 func TestPhraseToEntropyAndSeed(t *testing.T) {

@@ -120,15 +120,13 @@ func validateWordlist(wordList []string) (bool, error) {
 		}
 	}
 	if !valid {
-		// FIXME new error
-		return false, errors.New("Contains duplicates!")
+		return false, newWordlistContainsDuplicatesError()
 	}
 
 	const expectedSize = 2048
 	actualSize := len(wordList)
 	if actualSize != expectedSize {
-		// FIXME new error
-		return false, errors.New("Not enough words in the wordlist")
+		return false, newNotExpectedWordlistSizeError()
 	}
 	return valid, nil
 }

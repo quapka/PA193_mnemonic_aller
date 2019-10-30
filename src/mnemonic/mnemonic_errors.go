@@ -13,6 +13,8 @@ const errENTNotInRange = "PA193 mnemonic: The 'entropy' bit-length is not in the
 const errOpenWordlistError = "PA193_mnemonic: Could not open the wordlist file '%s'."
 const errInvalidWordError = "PA193 mnemonic: Wordlist contains an invalid word '%s'."
 const errCannotParseIntegerError = "PA193 mnemonic: Cannot parse '%s' as an integer."
+const errWordlistContainsduplicates = "PA193 mnemonic: The wordlist provided contains duplicate words. Make sure it is unique."
+const errNotExpectedWordlistSize = "PA193 mnemonic: The wordlist size is not 2048."
 
 func newEntropyNotDivisibleBy32Error(length int) error {
 	// FIXME add check for too big value
@@ -42,4 +44,12 @@ func newInvalidWordError(word string) error {
 
 func newCannotParseIntegerError(integer string) error {
 	return errors.New(fmt.Sprintf(errCannotParseIntegerError, integer))
+}
+
+func newWordlistContainsDuplicatesError() error {
+	return errors.New(errWordlistContainsduplicates)
+}
+
+func newNotExpectedWordlistSizeError() error {
+	return errors.New(errNotExpectedWordlistSize)
 }

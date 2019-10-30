@@ -21,6 +21,7 @@ func TestPBKDF2_SHA512(t *testing.T) {
 			InputSalt:      []byte("salt"),
 			InputCount:     1,
 			InputOutputLen: 64,
+			// FIXME split over multiple lines
 			Output: []byte{0x86, 0x7F, 0x70, 0xCF, 0x1A, 0xDE, 0x02, 0xCF, 0xF3, 0x75, 0x25, 0x99, 0xA3,
 				0xA5, 0x3D, 0xC4, 0xAF, 0x34, 0xC7, 0xA6, 0x69, 0x81, 0x5A, 0xE5, 0xD5, 0x13, 0x55, 0x4E, 0x1C, 0x8C, 0xF2, 0x52,
 				0xC0, 0x2D, 0x47, 0x0A, 0x28, 0x5A, 0x05, 0x01, 0xBA, 0xD9, 0x99, 0xBF, 0xE9, 0x43, 0xC0, 0x8F, 0x05, 0x02, 0x35,
@@ -520,13 +521,16 @@ var wlfile = "test-data/valid-wordlist.txt"
 
 func TestPhraseToEntropyAndSeed(t *testing.T) {
 
-	for _, v := range testVectors {
-		entropy, e := PhraseToEntropyAndSeed(v.phrase, wlfile)
-		if e != nil {
-			t.Errorf("Phrase to entropy and seed function failed: %s", e)
+	for _, tv := range testVectors {
+		entropy, seed, err := PhraseToEntropyAndSeed(tv.phrase, "TREZOR", wlfile)
+		if entropy != tv.entropy {
+			t.Errorf("Got unexpected entropy. Expected %s, got: %s", tv.entropy, entropy)
 		}
-		if entropy != v.entropy {
-			t.Errorf("Got unexpected entropy. Expected %s, got: %s", v.entropy, entropy)
+		if seed != tv.seed {
+			t.Error(gotExp(seed, tv.seed))
+		}
+		if equal, reason := equalError(err, nil); !equal {
+			t.Error(reason)
 		}
 	}
 }

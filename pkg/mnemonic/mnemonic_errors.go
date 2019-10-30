@@ -17,6 +17,8 @@ const errInvalidWordError = "PA193 mnemonic: Wordlist contains an invalid word '
 const errCannotParseIntegerError = "PA193 mnemonic: Cannot parse '%s' as an integer."
 const errWordlistContainsduplicates = "PA193 mnemonic: The wordlist provided contains duplicate words. Make sure it is unique."
 const errNotExpectedWordlistSize = "PA193 mnemonic: The wordlist size is not 2048."
+const errInvalidNumberOfPhraseWords = "PA193 mnemonic: The number of phrase words is not valid. Expected is from {12, 15, 18, 21, 24}."
+const errWordNotFromTheWordlist = "PA193 mnemonic: The word '%s' is not in the wordlist '%s'."
 
 func newEntropyNotDivisibleBy32Error(length int) error {
 	// FIXME add check for too big value
@@ -54,4 +56,12 @@ func newWordlistContainsDuplicatesError() error {
 
 func newNotExpectedWordlistSizeError() error {
 	return errors.New(errNotExpectedWordlistSize)
+}
+
+func newInvalidNumberOfPhraseWords() error {
+	return errors.New(errInvalidNumberOfPhraseWords)
+}
+
+func newWordNotFromTheWordlist(word, filepath string) error {
+	return fmt.Errorf(errWordNotFromTheWordlist, word, filepath)
 }

@@ -65,13 +65,13 @@ func PhraseToEntropyAndSeed(phrase, passphrase, wlfile string) (string, string, 
 
 	// Nb words should be 12, 15, 18, 21 or 24
 	if nbWords != 12 && nbWords != 15 && nbWords != 18 && nbWords != 21 && nbWords != 24 {
-		return "", "", errors.New("Phrase Invalid")
+		return "", "", newInvalidNumberOfPhraseWords()
 	}
 
 	// Read the wordlist file and extract words
-	content, e := ioutil.ReadFile(wlfile)
-	if e != nil {
-		return "", "", e
+	content, err := ioutil.ReadFile(wlfile)
+	if err != nil {
+		return "", "", newOpenWordlistError(wlfile)
 	}
 	// Split the file into words, handle multi words on one line
 	wordsList := strings.Fields(string(content))
@@ -87,7 +87,7 @@ func PhraseToEntropyAndSeed(phrase, passphrase, wlfile string) (string, string, 
 		// Get the index of the word in the wordsMap/wordlist
 		idx, found := wordsMap[wordP]
 		if found == false {
-			return "", "", errors.New("Phrase word not in wordlist: " + wordP)
+			return "", "", newWordNotFromTheWordlist(wordP, wlfile)
 		}
 
 		// Concatenate the index to find back the binary vector

@@ -555,6 +555,34 @@ func TestPhraseToEntropyAndSeed(t *testing.T) {
 			t.Error(reason)
 		}
 	}
+	// invalid vectors
+	testData := []struct {
+		inPhrase     string
+		inPassphrase string
+		inWordlist   string
+		outEntropy   string
+		outSeed      string
+		outError     error
+	}{
+		{inPhrase: "too few words", inPassphrase: "passphrase", inWordlist: "filepath.txt", outEntropy: "", outSeed: "", outError: newInvalidNumberOfPhraseWords()},
+		{inPhrase: strings.Repeat("word ", 12), inPassphrase: "passphrase", inWordlist: "filepath", outEntropy: "", outSeed: "", outError: newOpenWordlistError("filepath")},
+		{inPhrase: strings.Repeat("missing ", 12), inPassphrase: "", inWordlist: "test-data/valid-wordlist.txt", outEntropy: "", outSeed: "", outError: newWordNotFromTheWordlist("missing", "test-data/valid-wordlist.txt")},
+	}
+	for i, td := range testData {
+		entropy, seed, err := PhraseToEntropyAndSeed(td.inPhrase, td.inPassphrase, td.inWordlist)
+		if equal, reason := equalError(err, td.outError); !equal {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(reason)
+		}
+		if seed != td.outSeed {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(gotExp(seed, td.outSeed))
+		}
+		if entropy != td.outEntropy {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(gotExp(entropy, td.outEntropy))
+		}
+	}
 }
 
 func TestEntropyToPhraseAndSeed(t *testing.T) {

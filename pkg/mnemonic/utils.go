@@ -103,7 +103,7 @@ func createPhraseWords(indices []int64, words []string) (phraseWords []string, e
 	return phraseWords, nil
 }
 
-func validateWordlist(wordList []string) (bool, error) {
+func validateWordlist(wordList []string) error {
 	// assume it is a safe wordList
 	valid := true
 	// check duplicity
@@ -121,15 +121,15 @@ func validateWordlist(wordList []string) (bool, error) {
 		}
 	}
 	if !valid {
-		return false, newWordlistContainsDuplicatesError()
+		return newWordlistContainsDuplicatesError()
 	}
 
 	const expectedSize = 2048
 	actualSize := len(wordList)
 	if actualSize != expectedSize {
-		return false, newNotExpectedWordlistSizeError()
+		return newNotExpectedWordlistSizeError()
 	}
-	return valid, nil
+	return nil
 }
 
 func loadWordlist(filepath string) ([]string, error) {
@@ -149,10 +149,11 @@ func loadWordlist(filepath string) ([]string, error) {
 		if !validateWord(word) {
 			return nil, newInvalidWordError(word)
 		}
-		// FIXME what does the line consist of?
 		words = append(words, word)
 	}
-	// FIXME check for an error while reading
+	if err := validateWordlist(words); err != nil {
+		return nil, err
+	}
 	return words, nil
 }
 

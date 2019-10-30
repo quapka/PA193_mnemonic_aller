@@ -524,19 +524,14 @@ func TestFunc_validateWord(t *testing.T) {
 func TestFunc_validateWordlist(t *testing.T) {
 	testData := []struct {
 		inWordlist []string
-		outValid   bool
 		outError   error
 	}{
-		{inWordlist: []string{"duplicates", "duplicates"}, outValid: false, outError: newWordlistContainsDuplicatesError()},
-		{inWordlist: []string{"not", "enough", "words"}, outValid: false, outError: newNotExpectedWordlistSizeError()},
-		{inWordlist: validWordlist, outValid: true, outError: nil},
+		{inWordlist: []string{"duplicates", "duplicates"}, outError: newWordlistContainsDuplicatesError()},
+		{inWordlist: []string{"not", "enough", "words"}, outError: newNotExpectedWordlistSizeError()},
+		{inWordlist: validWordlist, outError: nil},
 	}
 	for i, td := range testData {
-		valid, err := validateWordlist(td.inWordlist)
-		if valid != td.outValid {
-			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(strconv.FormatBool(valid), strconv.FormatBool(td.outValid)))
-		}
+		err := validateWordlist(td.inWordlist)
 		if equal, reason := equalError(err, td.outError); !equal {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
 			t.Error(reason)

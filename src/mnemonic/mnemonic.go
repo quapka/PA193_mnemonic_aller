@@ -17,7 +17,7 @@ import (
 	"strings"
 )
 
-// FIXME add documenation of functions
+// FIXME add documention of functions
 // entropy can be of various length, therefore it needs to a slice not an array
 // FIXME check whether the underlying entropy array is changed, if so make a copy
 // params:

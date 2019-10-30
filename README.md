@@ -1,4 +1,6 @@
+[![Go report](https://goreportcard.com/badge/github.com/quapka/PA193_mnemonic_aller)](https://goreportcard.com/report/github.com/quapka/PA193_mnemonic_aller)
 [![Build Status](https://travis-ci.com/quapka/PA193_mnemonic_aller.svg?branch=master)](https://travis-ci.com/quapka/PA193_mnemonic_aller)
+[![Coverage Status](https://coveralls.io/repos/github/quapka/PA193_mnemonic_aller/badge.svg?branch=master)](https://coveralls.io/github/quapka/PA193_mnemonic_aller?branch=master)
 
 PA193_mnemonic_aller
 ====================

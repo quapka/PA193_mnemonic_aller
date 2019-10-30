@@ -87,19 +87,19 @@ func createIndices(groups []string) (indices []int64, err error) {
 		ind, err := strconv.ParseInt(group, 2, 0)
 		if err != nil {
 			// FIXME better message and consistent
-			return nil, errors.New("Cannot creat the phrase")
+			return nil, newCannotParseIntegerError(group)
 		}
 		indices = append(indices, ind)
 	}
 	return indices, nil
 }
 
-func createPhraseWords(indices []int64, words []string) (phrase []string, err error) {
+func createPhraseWords(indices []int64, words []string) (phraseWords []string, err error) {
 	// FIXME perform input checking!
 	for _, ind := range indices {
-		phrase = append(phrase, words[ind])
+		phraseWords = append(phraseWords, words[ind])
 	}
-	return phrase, nil
+	return phraseWords, nil
 }
 
 func validateWordlist(wordList []string) (bool, error) {
@@ -120,15 +120,13 @@ func validateWordlist(wordList []string) (bool, error) {
 		}
 	}
 	if !valid {
-		// FIXME new error
-		return false, errors.New("Contains duplicates!")
+		return false, newWordlistContainsDuplicatesError()
 	}
 
 	const expectedSize = 2048
 	actualSize := len(wordList)
 	if actualSize != expectedSize {
-		// FIXME new error
-		return false, errors.New("Not enough words in the wordlist")
+		return false, newNotExpectedWordlistSizeError()
 	}
 	return valid, nil
 }

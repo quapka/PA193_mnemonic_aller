@@ -1,5 +1,5 @@
 // Project: PA193_mnemonic_aller
-// Mainteners UCO: 408788 497391 497577
+// Maintainers UCO: 408788, 497391, 497577
 // Description: Mnemonic API unit testing
 
 package mnemonic
@@ -184,16 +184,15 @@ func TestFunc_cleanInputEntropy(t *testing.T) {
 }
 
 func TestFunc_getBinaryLength(t *testing.T) {
-	type testTemplate struct {
-		input       []byte
-		expectedLen int
-	}
-	testData := []testTemplate{
-		{input: []byte{0x00}, expectedLen: 8},
-		{input: []byte{0x05}, expectedLen: 8},
-		{input: []byte{0x05, 0x00}, expectedLen: 16},
-		{input: []byte{0x01, 0x00, 0x00, 0x00, 0x00}, expectedLen: 40},
-		{input: []byte{0xAC, 0xFB, 0x96, 0x23, 0xE6,
+	testData := []struct {
+		in_byte    []byte
+		out_length int
+	}{
+		{in_byte: []byte{0x00}, out_length: 8},
+		{in_byte: []byte{0x05}, out_length: 8},
+		{in_byte: []byte{0x05, 0x00}, out_length: 16},
+		{in_byte: []byte{0x01, 0x00, 0x00, 0x00, 0x00}, out_length: 40},
+		{in_byte: []byte{0xAC, 0xFB, 0x96, 0x23, 0xE6,
 			0x9A, 0x1F, 0xF0, 0xF7, 0xB7,
 			0x2E, 0xDE, 0xED, 0x0A, 0x03,
 			0xE7, 0xD8, 0x51, 0x3D, 0xE8,
@@ -232,13 +231,13 @@ func TestFunc_getBinaryLength(t *testing.T) {
 			0x31, 0x77, 0x4F, 0x2C, 0xA8,
 			0x21, 0x50, 0x4F, 0x8F, 0x37,
 			0x78, 0x58, 0xEB, 0x53, 0x67,
-			0xA9, 0x89, 0xA2, 0x17, 0xE7}, expectedLen: 1600},
+			0xA9, 0x89, 0xA2, 0x17, 0xE7}, out_length: 1600},
 	}
 	for i, td := range testData {
-		got := getBinaryLength(td.input)
-		if got != td.expectedLen {
+		got := getBinaryLength(td.in_byte)
+		if got != td.out_length {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(strconv.Itoa(got), strconv.Itoa(td.expectedLen)))
+			t.Error(gotExp(strconv.Itoa(got), strconv.Itoa(td.out_length)))
 		}
 	}
 }
@@ -289,15 +288,14 @@ func TestFunc_calculateCheckSum(t *testing.T) {
 }
 
 func TestFunc_convertToBinary(t *testing.T) {
-	type testTemplate struct {
-		input     []byte
-		expOutput string
-	}
-	testData := []testTemplate{
-		{input: []byte{0x00}, expOutput: "00000000"},
-		{input: []byte{0xFF}, expOutput: "11111111"},
-		{input: []byte{0x80, 0xFF}, expOutput: "1000000011111111"},
-		{input: []byte{0xAC, 0xFB, 0x96, 0x23, 0xE6,
+	testData := []struct {
+		in_bytes   []byte
+		out_binary string
+	}{
+		{in_bytes: []byte{0x00}, out_binary: "00000000"},
+		{in_bytes: []byte{0xFF}, out_binary: "11111111"},
+		{in_bytes: []byte{0x80, 0xFF}, out_binary: "1000000011111111"},
+		{in_bytes: []byte{0xAC, 0xFB, 0x96, 0x23, 0xE6,
 			0x9A, 0x1F, 0xF0, 0xF7, 0xB7,
 			0x2E, 0xDE, 0xED, 0x0A, 0x03,
 			0xE7, 0xD8, 0x51, 0x3D, 0xE8,
@@ -336,76 +334,78 @@ func TestFunc_convertToBinary(t *testing.T) {
 			0x31, 0x77, 0x4F, 0x2C, 0xA8,
 			0x21, 0x50, 0x4F, 0x8F, 0x37,
 			0x78, 0x58, 0xEB, 0x53, 0x67,
-			0xA9, 0x89, 0xA2, 0x17, 0xE7}, expOutput: "1010110011111011100101100010001111100110100110100001111111110000111101111011011100101110110111101110110100001010000000111110011111011000010100010011110111101000110010110100100101110011010101110101011011010001000101011110000110000101100010110111111100110110101001011010011011100111010000011010111010111101111111100010101100000001101011001100100001110011001100111001100100011001011000110110010011101110110110000000101000100001000010100011110011101101100110000110001111100011000110111011001101110001011101111100110010101111000011011011011010001110000010100000101101001100100100101000011100010000101101000010101001111110100110111000011101100110100000110110111111001110000011010110110111101010100111110001011101100010011011100101000001010010100100000001111000111001000100101100111101001001000010000010001001011001101000011100011010000000000110110110110111111011100110010000100000011000110101110111101100000111010110101111111001010101011010011001110011001001001001011000101011000101001011111111111000111011011000110101001011110011001101000001000100011011010010100101011011001010000000100010110001101010000100111000010011010010111101101101101110110001011100010110001011110001101101010010000011001100010010110111011000100000001101011111110101001110101101000111111010100001111110010110110010100011100011111100000100011100111001001100101010101100101101100010100000110000001111101100001001110000110110111101011100110000010110001101000000110110000101000011000101110111010011110010110010101000001000010101000001001111100011110011011101111000010110001110101101010011011001111010100110001001101000100001011111100111"},
+			0xA9, 0x89, 0xA2, 0x17, 0xE7}, out_binary: "1010110011111011100101100010001111100110100110100001111111110000111101111011011100101110110111101110110100001010000000111110011111011000010100010011110111101000110010110100100101110011010101110101011011010001000101011110000110000101100010110111111100110110101001011010011011100111010000011010111010111101111111100010101100000001101011001100100001110011001100111001100100011001011000110110010011101110110110000000101000100001000010100011110011101101100110000110001111100011000110111011001101110001011101111100110010101111000011011011011010001110000010100000101101001100100100101000011100010000101101000010101001111110100110111000011101100110100000110110111111001110000011010110110111101010100111110001011101100010011011100101000001010010100100000001111000111001000100101100111101001001000010000010001001011001101000011100011010000000000110110110110111111011100110010000100000011000110101110111101100000111010110101111111001010101011010011001110011001001001001011000101011000101001011111111111000111011011000110101001011110011001101000001000100011011010010100101011011001010000000100010110001101010000100111000010011010010111101101101101110110001011100010110001011110001101101010010000011001100010010110111011000100000001101011111110101001110101101000111111010100001111110010110110010100011100011111100000100011100111001001100101010101100101101100010100000110000001111101100001001110000110110111101011100110000010110001101000000110110000101000011000101110111010011110010110010101000001000010101000001001111100011110011011101111000010110001110101101010011011001111010100110001001101000100001011111100111"},
 	}
 	for i, td := range testData {
-		got := convertToBinary(td.input)
-		if got != td.expOutput {
+		got := convertToBinary(td.in_bytes)
+		if got != td.out_binary {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(got, td.expOutput))
+			t.Error(gotExp(got, td.out_binary))
 		}
 	}
 }
 
 func TestFunc_createGroups(t *testing.T) {
 	// FIXME check for expected error as well!
-	type testTemplate struct {
-		input     string
-		expOutput []string
-	}
-
-	testData := []testTemplate{
-		{input: "", expOutput: nil},
-		{input: "11111111111", expOutput: []string{"11111111111"}},
-		{input: "1111111111100000000000", expOutput: []string{"11111111111", "00000000000"}},
-		{input: "1010", expOutput: nil},
+	testData := []struct {
+		in_binary  string
+		out_groups []string
+	}{
+		{in_binary: "", out_groups: nil},
+		{in_binary: "11111111111", out_groups: []string{"11111111111"}},
+		{in_binary: "1111111111100000000000", out_groups: []string{"11111111111", "00000000000"}},
+		{in_binary: "1010", out_groups: nil},
 	}
 
 	for i, td := range testData {
-		got, _ := createGroups(td.input)
-		if !reflect.DeepEqual(got, td.expOutput) {
+		got, _ := createGroups(td.in_binary)
+		if !reflect.DeepEqual(got, td.out_groups) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(strings.Join(got, ", "), strings.Join(td.expOutput, ", ")))
+			t.Error(gotExp(strings.Join(got, ", "), strings.Join(td.out_groups, ", ")))
 		}
 	}
 }
 
 func TestFunc_createIndices(t *testing.T) {
-	type testTemplate struct {
-		input     []string
-		expOutput []int64
-	}
-
 	// FIXME add more tests
-	testData := []testTemplate{
-		{input: []string{"10101010101", "11111111111"}, expOutput: []int64{1365, 2047}},
+	testData := []struct {
+		in_groups   []string
+		out_indices []int64
+		out_error   error
+	}{
+		{in_groups: []string{"10101010101", "11111111111"}, out_indices: []int64{1365, 2047}, out_error: nil},
+		{in_groups: []string{"1010101010X", "11111111111"}, out_indices: nil, out_error: newCannotParseIntegerError("1010101010X")},
 	}
 
 	for i, td := range testData {
-		got, _ := createIndices(td.input)
-		if !reflect.DeepEqual(got, td.expOutput) {
+		got, err := createIndices(td.in_groups)
+		if !reflect.DeepEqual(got, td.out_indices) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
 			// FIXME give more descriptive errors
+		}
+		if equal, reason := equalError(err, td.out_error); !equal {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(reason)
 		}
 	}
 
 }
 
 func TestFunc_createPhraseWords(t *testing.T) {
-	type testTemplate struct {
-		indices []int64
-		words   []string
-		phrase  []string
-	}
 	// FIXME add more testData
-	testData := []testTemplate{
-		{indices: []int64{1, 1}, words: []string{"hello", "world"}, phrase: []string{"world", "world"}},
+	// FIXME test error
+	testData := []struct {
+		in_indices      []int64
+		in_words        []string
+		out_phraseWords []string
+	}{
+		{in_indices: []int64{1, 1}, in_words: []string{"hello", "world"}, out_phraseWords: []string{"world", "world"}},
 	}
 	for i, td := range testData {
-		got, _ := createPhraseWords(td.indices, td.words)
-		if !reflect.DeepEqual(got, td.phrase) {
+		got, _ := createPhraseWords(td.in_indices, td.in_words)
+		if !reflect.DeepEqual(got, td.out_phraseWords) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(strings.Join(got, ", "), strings.Join(td.phrase, ", ")))
+			t.Error(gotExp(strings.Join(got, ", "), strings.Join(td.out_phraseWords, ", ")))
 		}
 	}
 }
@@ -433,53 +433,72 @@ func TestFunc_loadWordList(t *testing.T) {
 }
 
 func TestFunc_cleanLine(t *testing.T) {
-	type testTemplate struct {
-		input     string
-		expOutput string
-	}
-
-	testData := []testTemplate{
-		{input: "", expOutput: ""},
-		{input: "WORD", expOutput: "word"},
-		{input: "\n word", expOutput: "word"},
-		{input: "word \n", expOutput: "word"},
-		{input: "\t word \n", expOutput: "word"},
-		{input: "\t WORD \n", expOutput: "word"},
+	testData := []struct {
+		in_line   string
+		out_clean string
+	}{
+		{in_line: "", out_clean: ""},
+		{in_line: "WORD", out_clean: "word"},
+		{in_line: "\n word", out_clean: "word"},
+		{in_line: "word \n", out_clean: "word"},
+		{in_line: "\t word \n", out_clean: "word"},
+		{in_line: "\t WORD \n", out_clean: "word"},
 	}
 
 	for i, td := range testData {
-		got := cleanLine(td.input)
-		if got != td.expOutput {
+		got := cleanLine(td.in_line)
+		if got != td.out_clean {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(got, td.expOutput))
+			t.Error(gotExp(got, td.out_clean))
 		}
 	}
 }
 
 func TestFunc_validateWord(t *testing.T) {
-	type testTemplate struct {
-		input string
-		valid bool
-	}
-
-	testData := []testTemplate{
-		{input: "", valid: false},
-		{input: " word", valid: false},
-		{input: "word ", valid: false},
-		{input: "word word", valid: false},
-		{input: "word", valid: true},
-		{input: "longword", valid: true},
-		{input: "WORD", valid: false},
-		{input: "veryveryveryveryveryverylongword", valid: true},
-		{input: "1word", valid: false},
+	testData := []struct {
+		in_word   string
+		out_valid bool
+	}{
+		{in_word: "", out_valid: false},
+		{in_word: " word", out_valid: false},
+		{in_word: "word ", out_valid: false},
+		{in_word: "word word", out_valid: false},
+		{in_word: "word", out_valid: true},
+		{in_word: "longword", out_valid: true},
+		{in_word: "WORD", out_valid: false},
+		{in_word: "veryveryveryveryveryverylongword", out_valid: true},
+		{in_word: "1word", out_valid: false},
 		// FIXME we should probably support Unicode
-		{input: "š", valid: false},
+		{in_word: "š", out_valid: false},
 	}
 	for i, td := range testData {
-		got := validateWord(td.input)
-		if got != td.valid {
+		got := validateWord(td.in_word)
+		if got != td.out_valid {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(strconv.FormatBool(got), strconv.FormatBool(td.valid)))
+			t.Error(gotExp(strconv.FormatBool(got), strconv.FormatBool(td.out_valid)))
+		}
+	}
+}
+
+func TestFunc_validateWordlist(t *testing.T) {
+	testData := []struct {
+		in_wordlist []string
+		out_valid   bool
+		out_error   error
+	}{
+		{in_wordlist: []string{"duplicates", "duplicates"}, out_valid: false, out_error: newWordlistContainsDuplicatesError()},
+		{in_wordlist: []string{"not", "enough", "words"}, out_valid: false, out_error: newNotExpectedWordlistSizeError()},
+		{in_wordlist: validWordlist, out_valid: true, out_error: nil},
+	}
+	for i, td := range testData {
+		valid, err := validateWordlist(td.in_wordlist)
+		if valid != td.out_valid {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(gotExp(strconv.FormatBool(valid), strconv.FormatBool(td.out_valid)))
+		}
+		if equal, reason := equalError(err, td.out_error); !equal {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(reason)
 		}
 	}
 }

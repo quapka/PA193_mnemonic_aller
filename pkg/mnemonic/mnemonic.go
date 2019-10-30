@@ -155,8 +155,6 @@ func VerifyPhraseAndSeed(phrase, passphrase, seed string) (bool, error) {
 	return true, nil
 }
 
-
-
 /* This function converts a mnemonic phrase to the corresponding seed using PBKDF2. */
 // FIXME move to utils
 func phraseToSeed(phrase, passphrase string) (seed []byte, err error) {

@@ -165,11 +165,10 @@ func TestFunc_cleanInputEntropy(t *testing.T) {
 }
 
 func TestFunc_getBinaryLength(t *testing.T) {
-	type testTemplate struct {
+	testData := []struct {
 		input       []byte
 		expectedLen int
-	}
-	testData := []testTemplate{
+	}{
 		{input: []byte{0x00}, expectedLen: 8},
 		{input: []byte{0x05}, expectedLen: 8},
 		{input: []byte{0x05, 0x00}, expectedLen: 16},
@@ -270,11 +269,10 @@ func TestFunc_calculateCheckSum(t *testing.T) {
 }
 
 func TestFunc_convertToBinary(t *testing.T) {
-	type testTemplate struct {
+	testData := []struct {
 		input     []byte
 		expOutput string
-	}
-	testData := []testTemplate{
+	}{
 		{input: []byte{0x00}, expOutput: "00000000"},
 		{input: []byte{0xFF}, expOutput: "11111111"},
 		{input: []byte{0x80, 0xFF}, expOutput: "1000000011111111"},
@@ -330,12 +328,10 @@ func TestFunc_convertToBinary(t *testing.T) {
 
 func TestFunc_createGroups(t *testing.T) {
 	// FIXME check for expected error as well!
-	type testTemplate struct {
+	testData := []struct {
 		input     string
 		expOutput []string
-	}
-
-	testData := []testTemplate{
+	}{
 		{input: "", expOutput: nil},
 		{input: "11111111111", expOutput: []string{"11111111111"}},
 		{input: "1111111111100000000000", expOutput: []string{"11111111111", "00000000000"}},
@@ -352,14 +348,12 @@ func TestFunc_createGroups(t *testing.T) {
 }
 
 func TestFunc_createIndices(t *testing.T) {
-	type testTemplate struct {
+	// FIXME add more tests
+	testData := []struct {
 		input     []string
 		expOutput []int64
 		out_error error
-	}
-
-	// FIXME add more tests
-	testData := []testTemplate{
+	}{
 		{input: []string{"10101010101", "11111111111"}, expOutput: []int64{1365, 2047}, out_error: nil},
 		{input: []string{"1010101010X", "11111111111"}, expOutput: nil, out_error: newCannotParseIntegerError("1010101010X")},
 	}
@@ -379,13 +373,12 @@ func TestFunc_createIndices(t *testing.T) {
 }
 
 func TestFunc_createPhraseWords(t *testing.T) {
-	type testTemplate struct {
+	// FIXME add more testData
+	testData := []struct {
 		indices []int64
 		words   []string
 		phrase  []string
-	}
-	// FIXME add more testData
-	testData := []testTemplate{
+	}{
 		{indices: []int64{1, 1}, words: []string{"hello", "world"}, phrase: []string{"world", "world"}},
 	}
 	for i, td := range testData {
@@ -420,12 +413,10 @@ func TestFunc_loadWordList(t *testing.T) {
 }
 
 func TestFunc_cleanLine(t *testing.T) {
-	type testTemplate struct {
+	testData := []struct {
 		input     string
 		expOutput string
-	}
-
-	testData := []testTemplate{
+	}{
 		{input: "", expOutput: ""},
 		{input: "WORD", expOutput: "word"},
 		{input: "\n word", expOutput: "word"},
@@ -444,12 +435,10 @@ func TestFunc_cleanLine(t *testing.T) {
 }
 
 func TestFunc_validateWord(t *testing.T) {
-	type testTemplate struct {
+	testData := []struct {
 		input string
 		valid bool
-	}
-
-	testData := []testTemplate{
+	}{
 		{input: "", valid: false},
 		{input: " word", valid: false},
 		{input: "word ", valid: false},

@@ -56,20 +56,16 @@ func equalError(got, exp error) (bool, string) {
 	if exp == nil {
 		if got != nil {
 			return false, gotExp(got.Error(), "nil")
-		} else {
-			return true, ""
 		}
-	} else {
-		if got != nil {
-			if got.Error() != exp.Error() {
-				return false, gotExp(got.Error(), exp.Error())
-			} else {
-				return true, ""
-			}
-		} else {
-			return false, gotExp("nil", exp.Error())
-		}
+		return true, ""
 	}
+	if got != nil {
+		if got.Error() != exp.Error() {
+			return false, gotExp(got.Error(), exp.Error())
+		}
+		return true, ""
+	}
+	return false, gotExp("nil", exp.Error())
 }
 
 func TestEntropyIsNotEmpty(t *testing.T) {

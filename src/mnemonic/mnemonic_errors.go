@@ -10,7 +10,9 @@ const errEntropyNotDivisibleBy32 = "PA193 mnemonic: The 'entropy' bit-length '%d
 const errEntropyIsNotHexadecimal = "PA193 mnemonic: The 'entropy' is not a hexadecimal string."
 const errEntropyIsEmpty = "PA193 mnemonic: The 'entropy' is empty."
 const errENTNotInRange = "PA193 mnemonic: The 'entropy' bit-length is not in the range %d-%d."
-const errOpenWordlistError = "PA193_mnemonic: Could not open the wordlist file '%s'."
+
+// TODO remove _
+const errOpenWordlistError = "PA193 mnemonic: Could not open the wordlist file '%s'."
 const errInvalidWordError = "PA193 mnemonic: Wordlist contains an invalid word '%s'."
 const errCannotParseIntegerError = "PA193 mnemonic: Cannot parse '%s' as an integer."
 const errWordlistContainsduplicates = "PA193 mnemonic: The wordlist provided contains duplicate words. Make sure it is unique."

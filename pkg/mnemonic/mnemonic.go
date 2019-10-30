@@ -13,6 +13,7 @@ import (
 	"strings"
 )
 
+// EntropyToPhraseAndSeed
 // FIXME add documention of functions
 // entropy can be of various length, therefore it needs to a slice not an array
 // FIXME check whether the underlying entropy array is changed, if so make a copy
@@ -47,6 +48,7 @@ func EntropyToPhraseAndSeed(entropy, passphrase, dictFilepath string) (phrase, s
 	return phrase, seed, nil
 }
 
+// PhraseToEntropyAndSeed
 // FIXME make wlfile naming consistetn!
 func PhraseToEntropyAndSeed(phrase, passphrase, wlfile string) (string, string, error) {
 

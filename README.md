@@ -81,9 +81,60 @@ $ make build-examples
 $ make verify-phrase-and-seed
 ```
 
+## Development
+
+In order to run test you can write `make test` and should observe similar output:
+```
+$ make test
+go test -v ./pkg/mnemonic/*.go
+=== RUN   TestPbkdf2Sha512
+--- PASS: TestPbkdf2Sha512 (0.17s)
+=== RUN   TestEntropyIsNotEmpty
+--- PASS: TestEntropyIsNotEmpty (0.00s)
+=== RUN   TestENTIsInRange
+--- PASS: TestENTIsInRange (0.00s)
+=== RUN   TestENTIsMultipleOf32
+--- PASS: TestENTIsMultipleOf32 (0.00s)
+=== RUN   TestEntropyIsHexadecimal
+--- PASS: TestEntropyIsHexadecimal (0.00s)
+=== RUN   TestCannotOpenWordlistFile
+--- PASS: TestCannotOpenWordlistFile (0.00s)
+=== RUN   TestFunc_cleanInputEntropy
+--- PASS: TestFunc_cleanInputEntropy (0.00s)
+=== RUN   TestFunc_getBinaryLength
+--- PASS: TestFunc_getBinaryLength (0.00s)
+=== RUN   TestFunc_calculateCheckSum
+--- PASS: TestFunc_calculateCheckSum (0.00s)
+=== RUN   TestFunc_convertToBinary
+--- PASS: TestFunc_convertToBinary (0.00s)
+=== RUN   TestFunc_createGroups
+--- PASS: TestFunc_createGroups (0.00s)
+=== RUN   TestFunc_createIndices
+--- PASS: TestFunc_createIndices (0.00s)
+=== RUN   TestFunc_createPhraseWords
+--- PASS: TestFunc_createPhraseWords (0.00s)
+=== RUN   TestFunc_loadWordList
+--- PASS: TestFunc_loadWordList (0.01s)
+=== RUN   TestFunc_cleanLine
+--- PASS: TestFunc_cleanLine (0.00s)
+=== RUN   TestFunc_validateWord
+--- PASS: TestFunc_validateWord (0.00s)
+=== RUN   TestFunc_validateWordlist
+--- PASS: TestFunc_validateWordlist (0.00s)
+=== RUN   TestPhraseToEntropyAndSeed
+--- PASS: TestPhraseToEntropyAndSeed (0.08s)
+=== RUN   TestEntropyToPhraseAndSeed
+--- PASS: TestEntropyToPhraseAndSeed (0.26s)
+=== RUN   TestVerifyPhraseAndSeed
+--- PASS: TestVerifyPhraseAndSeed (0.07s)
+PASS
+ok      command-line-arguments  (cached)
+```
+
+In case you want to make a contribution, please, open an issue and give a succint and clear explanation of what is wrong (and how to reproduce it) or what you want to improve (and why). Adding a minimal code example when necessary. Be prepared to be asked for more details in case they are deemed necessary in order to debug the issue. If you create a new functionality, make sure you (unit) test it first.
+
 ## Credits
 
 The test vectors come from the Python implementation made by the Trezor team: [https://github.com/trezor/python-mnemonic/blob/master/vectors.json](https://github.com/trezor/python-mnemonic/blob/master/vectors.json)
 
 The English wordlist (in `worldlists/english.txt`)  is from the [BIP-39 spec](https://github.com/bitcoin/bips/blob/master/bip-0039/bip-0039-wordlists.md).
-

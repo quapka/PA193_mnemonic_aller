@@ -271,9 +271,12 @@ func PBKDF2_SHA512(password, salt []byte, count, output_len int) ([]byte, int) {
 
 		output = T_1_to_l[0]
 
-		for i := 1; i < l; i++ {
-			output = append(output, T_1_to_l[i]...) /* DK = T_1 || T_2 ||  ...  || T_l<0..r-1> */
-		}
+		/* This part is only used if output_len is  greater than SHA512. (64 bytes)
+		* In bip39, the output_len is always 64 bytes, that is why we comment this part of code
+		*/
+		// for i := 1; i < l; i++ {
+		// 	output = append(output, T_1_to_l[i]...) /* DK = T_1 || T_2 ||  ...  || T_l<0..r-1> */
+		// }
 		return output, 0
 	}
 }

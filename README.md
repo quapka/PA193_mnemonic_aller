@@ -15,6 +15,11 @@ In order to download the package you need to run:
 $ go get github.com/quapka/PA193_mnemonic_aller/pkg/mnemonic
 ```
 
+## Make
+
+The project wraps some `go build` and `go install` calls in `make` calls.
+
+
 ## Use the command line interface
 
 Along with the package there is a simple command line interface, that allows you to use the full functionality of the library. However, this utility is not intended for production, rather serves as an example.
@@ -40,6 +45,14 @@ Phrase:  abandon abandon abandon abandon abandon abandon abandon abandon abandon
 Seed:  c55257c360c07c72029aebc1b53c05ed0362ada38ead3e3e9efa3708e53495531f09a6987599d18264c1e1c92f2cf141630c7a3c4ab7c81b2f001698e7463b04
 ```
 
+In order to build the utility run:
+```
+# the executable will end up in the ./bin folder
+$ make bip39
+# or create the binary locally
+$ cd cmd/bip39 && go build .
+```
+
 ## Application Programming Interface
 
 The API consists of simply three functions. You can see the signatures here. In order to
@@ -50,6 +63,22 @@ func EntropyToPhraseAndSeed(entropy, passphrase, dictFilepath string) (phrase, s
 func PhraseToEntropyAndSeed(phrase, passphrase, wlfile string) (string, string, error)
 
 func VerifyPhraseAndSeed(phrase, passphrase, seed string) (bool, error)
+```
+
+## Examples
+
+There are three examples located in `examples/` directory. Each subfolder contains example code using one of the functions of the API. You can either build the examples separately by running `go build .` inside the directory e.g.:
+```
+$ cd examples/entropy-to-phrase-and-seed
+$ go build .
+```
+
+Or build them using `make`:
+```
+# build all examples at once
+$ make build-examples
+# build only one exapmle
+$ make verify-phrase-and-seed
 ```
 
 ## Credits

@@ -177,65 +177,65 @@ func validateWord(word string) bool {
 // https://www.ietf.org/rfc/rfc2898.txt
 // This function is called by the Pbkdf2Sha512 function and should not
 // be used in another context
-func Pbkdf2Sha512_F(password, salt []byte, count, l_counter int) ([]byte, int) {
+func Pbkdf2Sha512_F(password, salt []byte, count, lCounter int) ([]byte, int) {
 	// Translation variable with RFC :
-	// U_1, U_2, U_3 ... U_c is the array U_1_to_c, begin at 0 end at c-1
-	// T_1, T_2, T_3 ... T_l is the array T_1_to_l, begin at 0 end at l-1
+	// U_1, U_2, U_3 ... U_c is the array U1ToC, begin at 0 end at c-1
+	// T_1, T_2, T_3 ... T_l is the array T1Tol, begin at 0 end at l-1
 	// hLen is hLen
-	// dkLen is output_len
+	// dkLen is OutputLen
 	// P is password
 	// S is salt
 	// c is count
-	// INT(i) is INT_i_l
-	// l_counter in the program is the index until l in the RFC
+	// INT(i) is INTil
+	// lCounter in the program is the index until l in the RFC
 
-	U_1_to_c := make([][]byte, count)
+	U1ToC := make([][]byte, count)
 
-	var INT_i_l [4]byte
-	INT_i_l[0] = byte((l_counter >> 24))
-	INT_i_l[1] = byte((l_counter >> 16)) /* INT (i) is a four-octet encoding of the integer i, most significant octet first. */
-	INT_i_l[2] = byte((l_counter >> 8))
-	INT_i_l[3] = byte((l_counter))
+	var INTil [4]byte
+	INTil[0] = byte((lCounter >> 24))
+	INTil[1] = byte((lCounter >> 16)) /* INT (i) is a four-octet encoding of the integer i, most significant octet first. */
+	INTil[2] = byte((lCounter >> 8))
+	INTil[3] = byte((lCounter))
 
-	U_1_to_c[0] = make([]byte, 0, 64) /* U_1 = PRF (P, S || INT (i)) , */
+	U1ToC[0] = make([]byte, 0, 64) /* U_1 = PRF (P, S || INT (i)) , */
 
-	sha_512 := hmac.New(sha512.New, password)
-	if sha_512 == nil {
+	Sha512 := hmac.New(sha512.New, password)
+	if Sha512 == nil {
 		return nil, -1
 	}
 
-	sha_512.Write(salt)
-	sha_512.Write(INT_i_l[:4])
+	Sha512.Write(salt)
+	Sha512.Write(INTil[:4])
 
-	U_1_to_c[0] = sha_512.Sum(U_1_to_c[0])
-	if U_1_to_c[0] == nil {
+	U1ToC[0] = Sha512.Sum(U1ToC[0])
+	if U1ToC[0] == nil {
 		return nil, -1
 	}
 
-	sha_512.Reset()
+	Sha512.Reset()
 
 	for i := 1; i < count; i++ { /* U_2 = PRF (P, U_1) , */
-		sha_512.Reset() /* ... */
+		Sha512.Reset() /* ... */
 
-		U_1_to_c[i] = make([]byte, 64) /* U_c = PRF (P, U_{c-1}) . */
+		U1ToC[i] = make([]byte, 64) /* U_c = PRF (P, U_{c-1}) . */
 
-		sha_512.Write(U_1_to_c[i-1])
+		Sha512.Write(U1ToC[i-1])
 
-		U_1_to_c[i] = sha_512.Sum(nil)
-		if U_1_to_c[i] == nil {
+		U1ToC[i] = Sha512.Sum(nil)
+		if U1ToC[i] == nil {
 			return nil, -1
 		}
 
-		sha_512.Reset()
+		Sha512.Reset()
 	}
 
 	output := make([]byte, 64)
 
-	output = U_1_to_c[0]
+	output = U1ToC[0]
 
 	for i := 1; i < count; i++ { /* F (P, S, c, i) = U_1 \xor U_2 \xor ... \xor U_c */
-		for j := range U_1_to_c[i] {
-			output[j] ^= U_1_to_c[i][j]
+		for j := range U1ToC[i] {
+			output[j] ^= U1ToC[i][j]
 		}
 	}
 	return output, 0
@@ -248,19 +248,19 @@ func Pbkdf2Sha512_F(password, salt []byte, count, l_counter int) ([]byte, int) {
 // password   : is the password that will be derived (P in RFC)
 // salt 		  : is the salt that will be added to password (S in RFC)
 // count 		  : Number of iteration of SHA-512 (c in the RFC)
-// output_len : Length of the derived password (output) MUST BE 64 as 64 bytes
-func Pbkdf2Sha512(password, salt []byte, count, output_len int) ([]byte, int) {
+// OutputLen : Length of the derived password (output) MUST BE 64 as 64 bytes
+func Pbkdf2Sha512(password, salt []byte, count, OutputLen int) ([]byte, int) {
 	// Translation variable with RFC :
-	// U_1, U_2, U_3 ... U_c is the array U_1_to_c, begin at 0 end at c-1
-	// T_1, T_2, T_3 ... T_l is the array T_1_to_l, begin at 0 end at l-1
+	// U_1, U_2, U_3 ... U_c is the array U1ToC, begin at 0 end at c-1
+	// T_1, T_2, T_3 ... T_l is the array T1Tol, begin at 0 end at l-1
 	// hLen is hLen
-	// dkLen is output_len
+	// dkLen is OutputLen
 	// P is password
 	// S is salt
 	// c is count
-	// INT(i) is INT_i_l
-	// l_counter in the program is the index until l in the RFC
-	if output_len != 64 { /* Length of SHA-512 */ /* 1. If dkLen > (2^32 - 1) * hLen, output "derived key too long" and stop.*/
+	// INT(i) is INTil
+	// lCounter in the program is the index until l in the RFC
+	if OutputLen != 64 { /* Length of SHA-512 */ /* 1. If dkLen > (2^32 - 1) * hLen, output "derived key too long" and stop.*/
 		return nil, -1
 	} else {
 
@@ -269,33 +269,33 @@ func Pbkdf2Sha512(password, salt []byte, count, output_len int) ([]byte, int) {
 		var l int
 
 		if hLen != 0 {
-			l = output_len / hLen /* Should be equal to 1 !*/ /* l = CEIL (dkLen / hLen) , */
+			l = OutputLen / hLen /* Should be equal to 1 !*/ /* l = CEIL (dkLen / hLen) , */
 		} else {
 			return nil, -1
 		}
-		// r := output_len -(l-1)*hLen        /* Should be equal to output_len, so 64 bytes */  /* r = dkLen - (l - 1) * hLen . */
+		// r := OutputLen -(l-1)*hLen        /* Should be equal to OutputLen, so 64 bytes */  /* r = dkLen - (l - 1) * hLen . */
 		/* Commented because it is an unused variable */
 
-		T_1_to_l := make([][]byte, output_len)
+		T1Tol := make([][]byte, OutputLen)
 
 		for i := 0; i < l; i++ { /* T_1 = F (P, S, c, 1) ,*/
-			T_1_to_l[i] = make([]byte, output_len) /* T_2 = F (P, S, c, 2) ,*/
+			T1Tol[i] = make([]byte, OutputLen) /* T_2 = F (P, S, c, 2) ,*/
 
-			T_1_to_l[i], err = Pbkdf2Sha512_F(password, salt, count, i+1) /* i+1 because begin l in RFC        ...         */
+			T1Tol[i], err = Pbkdf2Sha512_F(password, salt, count, i+1) /* i+1 because begin l in RFC        ...         */
 			if err < 0 {
 				return nil, -1
 			}
 		} /* T_l = F (P, S, c, l) , */
 
-		output := make([]byte, output_len)
+		output := make([]byte, OutputLen)
 
-		output = T_1_to_l[0]
+		output = T1Tol[0]
 
-		/* This part is only used if output_len is  greater than SHA512. (64 bytes)
-		* In bip39, the output_len is always 64 bytes, that is why we comment this part of code
+		/* This part is only used if OutputLen is  greater than SHA512. (64 bytes)
+		* In bip39, the OutputLen is always 64 bytes, that is why we comment this part of code
 		 */
 		// for i := 1; i < l; i++ {
-		// 	output = append(output, T_1_to_l[i]...) /* DK = T_1 || T_2 ||  ...  || T_l<0..r-1> */
+		// 	output = append(output, T1Tol[i]...) /* DK = T_1 || T_2 ||  ...  || T_l<0..r-1> */
 		// }
 		return output, 0
 	}

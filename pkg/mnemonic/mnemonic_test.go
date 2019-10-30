@@ -12,45 +12,38 @@ import (
 	"testing"
 )
 
-
 func TestPBKDF2_SHA512(t *testing.T) {
-	testData := []struct{
+	testData := []struct {
 		InputPassword, InputSalt, Output []byte
-		InputCount, InputOutputLen int
+		InputCount, InputOutputLen       int
 	}{
 		{InputPassword: []byte("password"),
-		 InputSalt: []byte("salt"),
-		 InputCount: 1,
-		 InputOutputLen: 64,
-		 Output: []byte{0x86,0x7F,0x70,0xCF,0x1A,0xDE,0x02,0xCF,0xF3,0x75,0x25,0x99,0xA3,
-									 0xA5,0x3D,0xC4,0xAF,0x34,0xC7,0xA6,0x69,0x81,0x5A,0xE5,0xD5,0x13,0x55,0x4E,0x1C,0x8C,0xF2,0x52,
-									 0xC0,0x2D,0x47,0x0A,0x28,0x5A,0x05,0x01,0xBA,0xD9,0x99,0xBF,0xE9,0x43,0xC0,0x8F,0x05,0x02,0x35,
-									 0xD7,0xD6,0x8B,0x1D,0xA5,0x5E,0x63,0xF7,0x3B,0x60,0xA5,0x7F,0xCE},
+			InputSalt:      []byte("salt"),
+			InputCount:     1,
+			InputOutputLen: 64,
+			// FIXME split over multiple lines
+			Output: []byte{0x86, 0x7F, 0x70, 0xCF, 0x1A, 0xDE, 0x02, 0xCF, 0xF3, 0x75, 0x25, 0x99, 0xA3,
+				0xA5, 0x3D, 0xC4, 0xAF, 0x34, 0xC7, 0xA6, 0x69, 0x81, 0x5A, 0xE5, 0xD5, 0x13, 0x55, 0x4E, 0x1C, 0x8C, 0xF2, 0x52,
+				0xC0, 0x2D, 0x47, 0x0A, 0x28, 0x5A, 0x05, 0x01, 0xBA, 0xD9, 0x99, 0xBF, 0xE9, 0x43, 0xC0, 0x8F, 0x05, 0x02, 0x35,
+				0xD7, 0xD6, 0x8B, 0x1D, 0xA5, 0x5E, 0x63, 0xF7, 0x3B, 0x60, 0xA5, 0x7F, 0xCE},
 		},
 		{InputPassword: []byte("password"),
-		 InputSalt: []byte("salt"),
-		 InputCount: 2,
-		 InputOutputLen: 64,
-		 Output: []byte{0xE1,0xD9,0xC1,0x6A,0xA6,0x81,0x70,0x8A,0x45,0xF5,0xC7,0xC4,0xE2,0x15,0xCE,0xB6,0x6E,
-		 			0x01,0x1A,0x2E,0x9F,0x00,0x40,0x71,0x3F,0x18,0xAE,0xFD,0xB8,0x66,0xD5,0x3C,0xF7,0x6C,0xAB,0x28,
-		 			0x68,0xA3,0x9B,0x9F,0x78,0x40,0xED,0xCE,0x4F,0xEF,0x5A,0x82,0xBE,0x67,0x33,0x5C,0x77,0xA6,0x06,
-		 			0x8E,0x04,0x11,0x27,0x54,0xF2,0x7C,0xCF,0x4E},
+			InputSalt:      []byte("salt"),
+			InputCount:     2,
+			InputOutputLen: 64,
+			Output: []byte{0xE1, 0xD9, 0xC1, 0x6A, 0xA6, 0x81, 0x70, 0x8A, 0x45, 0xF5, 0xC7, 0xC4, 0xE2, 0x15, 0xCE, 0xB6, 0x6E,
+				0x01, 0x1A, 0x2E, 0x9F, 0x00, 0x40, 0x71, 0x3F, 0x18, 0xAE, 0xFD, 0xB8, 0x66, 0xD5, 0x3C, 0xF7, 0x6C, 0xAB, 0x28,
+				0x68, 0xA3, 0x9B, 0x9F, 0x78, 0x40, 0xED, 0xCE, 0x4F, 0xEF, 0x5A, 0x82, 0xBE, 0x67, 0x33, 0x5C, 0x77, 0xA6, 0x06,
+				0x8E, 0x04, 0x11, 0x27, 0x54, 0xF2, 0x7C, 0xCF, 0x4E},
 		},
 	}
-	for i,tD := range testData{
-		result,_ := PBKDF2_SHA512(tD.InputPassword,tD.InputSalt,tD.InputCount,tD.InputOutputLen)
+	for i, tD := range testData {
+		result, _ := PBKDF2_SHA512(tD.InputPassword, tD.InputSalt, tD.InputCount, tD.InputOutputLen)
 		if !reflect.DeepEqual(result, tD.Output) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
 		}
 	}
 }
-
-
-
-
-
-
-
 
 // FIXME rewrite table tests to have inplace struct definition
 // FIXME testing for errors is not done nicely - problem with calling .Error() on 'nil'
@@ -63,20 +56,16 @@ func equalError(got, exp error) (bool, string) {
 	if exp == nil {
 		if got != nil {
 			return false, gotExp(got.Error(), "nil")
-		} else {
-			return true, ""
 		}
-	} else {
-		if got != nil {
-			if got.Error() != exp.Error() {
-				return false, gotExp(got.Error(), exp.Error())
-			} else {
-				return true, ""
-			}
-		} else {
-			return false, gotExp("nil", exp.Error())
-		}
+		return true, ""
 	}
+	if got != nil {
+		if got.Error() != exp.Error() {
+			return false, gotExp(got.Error(), exp.Error())
+		}
+		return true, ""
+	}
+	return false, gotExp("nil", exp.Error())
 }
 
 func TestEntropyIsNotEmpty(t *testing.T) {
@@ -486,11 +475,12 @@ func TestFunc_validateWord(t *testing.T) {
 		{in_word: "word word", out_valid: false},
 		{in_word: "word", out_valid: true},
 		{in_word: "longword", out_valid: true},
-		{in_word: "WORD", out_valid: false},
 		{in_word: "veryveryveryveryveryverylongword", out_valid: true},
-		{in_word: "1word", out_valid: false},
-		// FIXME we should probably support Unicode
-		{in_word: "š", out_valid: false},
+		{in_word: "1word", out_valid: true},
+		{in_word: "š", out_valid: true},
+		{in_word: "あいさつ", out_valid: true},
+		{in_word: "期", out_valid: true},
+		{in_word: "épidémie", out_valid: true},
 	}
 	for i, td := range testData {
 		got := validateWord(td.in_word)
@@ -524,17 +514,20 @@ func TestFunc_validateWordlist(t *testing.T) {
 	}
 }
 
-var wlfile = "../../wordlists/english.txt"
+var wlfile = "test-data/valid-wordlist.txt"
 
 func TestPhraseToEntropyAndSeed(t *testing.T) {
 
-	for _, v := range testVectors {
-		entropy, e := PhraseToEntropyAndSeed(v.phrase, wlfile)
-		if e != nil {
-			t.Errorf("Phrase to entropy and seed function failed: %s", e)
+	for _, tv := range testVectors {
+		entropy, seed, err := PhraseToEntropyAndSeed(tv.phrase, "TREZOR", wlfile)
+		if entropy != tv.entropy {
+			t.Errorf("Got unexpected entropy. Expected %s, got: %s", tv.entropy, entropy)
 		}
-		if entropy != v.entropy {
-			t.Errorf("Got unexpected entropy. Expected %s, got: %s", v.entropy, entropy)
+		if seed != tv.seed {
+			t.Error(gotExp(seed, tv.seed))
+		}
+		if equal, reason := equalError(err, nil); !equal {
+			t.Error(reason)
 		}
 	}
 }
@@ -555,6 +548,22 @@ func TestEntropyToPhraseAndSeed(t *testing.T) {
 			t.Error(reason)
 		}
 	}
+}
+
+func TestVerifyPhraseAndSeed(t *testing.T) {
+	for i, tv := range testVectors {
+		match, err := VerifyPhraseAndSeed(tv.phrase, "TREZOR", tv.seed)
+		// all test vectors should match, no errors expected
+		if err != nil {
+			t.Error(fmt.Sprintf("In %dth test vector.", i+1))
+			t.Error(gotExp(err.Error(), "nil"))
+		}
+		if match != true {
+			t.Error(fmt.Sprintf("In %dth test vector.", i+1))
+			t.Error("Expected match, but phrase and seed differ")
+		}
+	}
+	// FIXME add tests for not matching phrase and seed
 }
 
 var testVectors = []struct {

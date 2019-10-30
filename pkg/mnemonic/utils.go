@@ -162,7 +162,7 @@ func cleanLine(line string) string {
 }
 
 func validateWord(word string) bool {
-	wordPatten, err := regexp.Compile("^[a-z]+$")
+	wordPatten, err := regexp.Compile("^[^\\s]+$")
 	if err != nil {
 		return false
 	}

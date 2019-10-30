@@ -10,10 +10,8 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"math/big"
-	"os"
 	"strings"
 )
 
@@ -51,7 +49,8 @@ func EntropyToPhraseAndSeed(entropy, passphrase, dictFilepath string) (phrase, s
 	return phrase, seed, nil
 }
 
-func PhraseToEntropyAndSeed(phrase string, wlfile string) (string, error) {
+// FIXME make wlfile naming consistetn!
+func PhraseToEntropyAndSeed(phrase, passphrase, wlfile string) (string, string, error) {
 
 	var wBytes [2]byte
 
@@ -66,13 +65,13 @@ func PhraseToEntropyAndSeed(phrase string, wlfile string) (string, error) {
 
 	// Nb words should be 12, 15, 18, 21 or 24
 	if nbWords != 12 && nbWords != 15 && nbWords != 18 && nbWords != 21 && nbWords != 24 {
-		return "", errors.New("Phrase Invalid")
+		return "", "", errors.New("Phrase Invalid")
 	}
 
 	// Read the wordlist file and extract words
 	content, e := ioutil.ReadFile(wlfile)
 	if e != nil {
-		return "", e
+		return "", "", e
 	}
 	// Split the file into words, handle multi words on one line
 	wordsList := strings.Fields(string(content))
@@ -88,7 +87,7 @@ func PhraseToEntropyAndSeed(phrase string, wlfile string) (string, error) {
 		// Get the index of the word in the wordsMap/wordlist
 		idx, found := wordsMap[wordP]
 		if found == false {
-			return "", errors.New("Phrase word not in wordlist: " + wordP)
+			return "", "", errors.New("Phrase word not in wordlist: " + wordP)
 		}
 
 		// Concatenate the index to find back the binary vector
@@ -135,22 +134,28 @@ func PhraseToEntropyAndSeed(phrase string, wlfile string) (string, error) {
 		entropyStr = hex.EncodeToString(entropy)
 	}
 
-	return entropyStr, nil
+	// create the seed
+	seedBytes, _ := phraseToSeed(phrase, passphrase)
+	seed := hex.EncodeToString(seedBytes)
+
+	return entropyStr, seed, nil
 }
 
-func VerifyPhraseAndSeed(phrase_to_verify, seed_to_verify, wlfile string) int {
-	var seed string
-	seed, _ = PhraseToEntropyAndSeed(phrase_to_verify, wlfile) /* WARNING NEED THE SEED IN THE RETURN NOT ONLY THE ERROR */
-	if seed_to_verify == seed {
-		fmt.Println("The phrase and the seed correspond !!")
-		return 0
-	} else {
-		fmt.Println("The phrase and the seed do NOT correspond !!")
-		return -1
+func VerifyPhraseAndSeed(phrase, passphrase, seed string) (bool, error) {
+	// FIXME
+	// entropy, seed, err = PhraseToEntropyAndSeed(phrase_to_verify, passphrase, wlfile)
+	seedFromPhraseBytes, err := phraseToSeed(phrase, passphrase)
+	seedFromPhrase := hex.EncodeToString(seedFromPhraseBytes)
+	if err != nil {
+		return false, err
 	}
-	return -1
+	if seedFromPhrase != seed {
+		return false, nil
+	}
+	return true, nil
 }
 
+// FIXME lowercase
 func PBKDF2_SHA512_F(password, salt []byte, count, l_counter int) ([]byte, int) {
 
 	U_1_to_c := make([][]byte, count)
@@ -230,6 +235,7 @@ c is count
 INT(i) is INT_i_l
 l_counter in the program is the index until l in the RFC
 */
+// FIXME move to utils.go
 func PBKDF2_SHA512(password, salt []byte, count, output_len int) ([]byte, int) {
 	if output_len != 64 { /* Length of SHA-512 */ /* 1. If dkLen > (2^32 - 1) * hLen, output "derived key too long" and stop.*/
 		return nil, -1
@@ -273,7 +279,7 @@ func PBKDF2_SHA512(password, salt []byte, count, output_len int) ([]byte, int) {
 
 		/* This part is only used if output_len is  greater than SHA512. (64 bytes)
 		* In bip39, the output_len is always 64 bytes, that is why we comment this part of code
-		*/
+		 */
 		// for i := 1; i < l; i++ {
 		// 	output = append(output, T_1_to_l[i]...) /* DK = T_1 || T_2 ||  ...  || T_l<0..r-1> */
 		// }
@@ -282,11 +288,14 @@ func PBKDF2_SHA512(password, salt []byte, count, output_len int) ([]byte, int) {
 }
 
 /* This function converts a mnemonic phrase to the corresponding seed using PBKDF2. */
-func phraseToSeed(phrase, passphrase string) (seed []byte, err int) {
-	seed, err = PBKDF2_SHA512([]byte(phrase), []byte("mnemonic"+passphrase), 2048, 64)
-	if err < 0 {
-		fmt.Fprintf(os.Stderr, "Error in PBKDF2_SHA512")
-		seed = nil
+// FIXME move to utils
+func phraseToSeed(phrase, passphrase string) (seed []byte, err error) {
+	// FIXME return error not int and check for that
+	seed, x := PBKDF2_SHA512([]byte(phrase), []byte("mnemonic"+passphrase), 2048, 64)
+	if x < 0 {
+		return nil, errors.New("cannot generate")
+		// fmt.Fprintf(os.Stderr, "Error in PBKDF2_SHA512")
+		// seed = nil
 	}
-	return seed, err
+	return seed, nil
 }

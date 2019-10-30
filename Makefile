@@ -1,23 +1,42 @@
+GO = go
+BUILD_CMD = go build
+INSTALL_CMD = go install
 
-BUILD_CMD=go build
+CMD_UTILITY = bip39
 
-BIN_NAME=aller.out
+BIN_DIR = ./bin
+SRC_DIR = ./src
+CMD_DIR = ./cmd
+PKG_DIR = ./pkg
+EX_DIR  =  examples
 
-BIN_DIR=./bin
-SRC_DIR=./src
+EX1 = entropy-to-phrase-and-seed
+EX2 = phrase-to-entropy-and-seed
+EX3 = verify-phrase-and-seed
 
-export GOPATH=$(shell pwd)
+.PHONY: clean all
 
-build:
-	$(BUILD_CMD) -o $(BIN_DIR)/$(BIN_NAME) $(SRC_DIR)/*.go
+all: $(CMD_UTILITY)
 
-start: build
-	./bin/$(BIN_NAME)
+$(CMD_UTILITY):
+	$(BUILD_CMD) -o $(BIN_DIR)/$(CMD_UTILITY) $(CMD_DIR)/$@/*.go
+
+install-pkg:
+	$(INSTALL_CMD) ../PA193_mnemonic_aller/$(PKG_DIR)/mnemonic
 
 test:
-	go test -cover mnemonic
-
+	$(GO) test -v $(PKG_DIR)/mnemonic/*.go
 
 clean:
-	rm -f bin/*
+	rm -f $(BIN_DIR)/*
 
+build-examples: $(EX1) $(EX2) $(EX3)
+
+$(EX1):
+	$(BUILD_CMD) -o $(BIN_DIR)/$@ $(EX_DIR)/$@/*.go
+
+$(EX2):
+	$(BUILD_CMD) -o $(BIN_DIR)/$@ $(EX_DIR)/$@/*.go
+
+$(EX3):
+	$(BUILD_CMD) -o $(BIN_DIR)/$@ $(EX_DIR)/$@/*.go

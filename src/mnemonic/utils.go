@@ -94,12 +94,12 @@ func createIndices(groups []string) (indices []int64, err error) {
 	return indices, nil
 }
 
-func createPhraseWords(indices []int64, words []string) (phrase []string, err error) {
+func createPhraseWords(indices []int64, words []string) (phraseWords []string, err error) {
 	// FIXME perform input checking!
 	for _, ind := range indices {
-		phrase = append(phrase, words[ind])
+		phraseWords = append(phraseWords, words[ind])
 	}
-	return phrase, nil
+	return phraseWords, nil
 }
 
 func validateWordlist(wordList []string) (bool, error) {

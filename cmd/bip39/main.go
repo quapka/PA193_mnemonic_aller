@@ -8,11 +8,23 @@ import (
 	"flag"
 	"fmt"
 	"github.com/quapka/PA193_mnemonic_aller/pkg/mnemonic"
+	"log"
 	"os"
 )
 
 func displayMissingArg(msg string) {
-	os.Stderr.WriteString(msg + "\nUsage:\n")
+	wrote, err := os.Stderr.WriteString(msg + "\nUsage:\n")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for wrote != len(msg) {
+		n, err := os.Stderr.WriteString(msg[wrote:])
+		if err != nil {
+			log.Fatal(err)
+		}
+		wrote += n
+	}
+
 	flag.PrintDefaults()
 	os.Exit(1)
 }
@@ -40,7 +52,15 @@ func main() {
 
 	if *seedPtr != "" {
 		// Verify phrase and seed
-		mnemonic.VerifyPhraseAndSeed("TMP CHARACTER CHAIN", "NEED TO BE CHANGED", *wordlistFilePtr)
+		match, err := mnemonic.VerifyPhraseAndSeed(*phrasePtr, *passphrasePtr, *seedPtr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if !match {
+			fmt.Println("The phrase and the seed do not match.")
+		} else {
+			fmt.Println("The phrase and the seed match each other.")
+		}
 
 	} else if *phrasePtr != "" {
 		// Get the entropy and seed from the phrase

@@ -6,6 +6,7 @@ before_install:
     - go get github.com/mattn/goveralls
     - go get github.com/tsenart/deadcode
     - go get -u github.com/mibk/dupl
+    - go get -u github.com/kisielk/errcheck
 script:
     - make
     - make build-examples
@@ -13,3 +14,4 @@ script:
     - $GOPATH/bin/goveralls -service=travis-ci
     - deadcode pkg/mnemonic
     - dupl -t 100 pkg/mnemonic/mnemonic.go pkg/mnemonic/utils.go pkg/mnemonic_errors.go
+    - ! errcheck ./... | grep -v "defer "

@@ -133,14 +133,14 @@ func validateWordlist(wordList []string) error {
 }
 
 func loadWordlist(filepath string) ([]string, error) {
-	dict, err := os.Open(filepath) // For read access.
+	wlFile, err := os.Open(filepath) // For read access.
 	if err != nil {
 		// TODO bubble the original error? Or simply in a wrapper?
 		return nil, newOpenWordlistError(filepath)
 	}
-	defer dict.Close()
+	defer wlFile.Close()
 
-	scanner := bufio.NewScanner(dict)
+	scanner := bufio.NewScanner(wlFile)
 	scanner.Split(bufio.ScanLines)
 	var words []string
 

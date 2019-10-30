@@ -549,6 +549,22 @@ func TestEntropyToPhraseAndSeed(t *testing.T) {
 	}
 }
 
+func TestVerifyPhraseAndSeed(t *testing.T) {
+	for i, tv := range testVectors {
+		match, err := VerifyPhraseAndSeed(tv.phrase, "TREZOR", tv.seed)
+		// all test vectors should match, no errors expected
+		if err != nil {
+			t.Error(fmt.Sprintf("In %dth test vector.", i+1))
+			t.Error(gotExp(err.Error(), "nil"))
+		}
+		if match != true {
+			t.Error(fmt.Sprintf("In %dth test vector.", i+1))
+			t.Error("Expected match, but phrase and seed differ")
+		}
+	}
+	// FIXME add tests for not matching phrase and seed
+}
+
 var testVectors = []struct {
 	entropy string
 	phrase  string

@@ -10,10 +10,8 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"math/big"
-	"os"
 	"strings"
 )
 
@@ -143,18 +141,18 @@ func PhraseToEntropyAndSeed(phrase, passphrase, wlfile string) (string, string, 
 	return entropyStr, seed, nil
 }
 
-func VerifyPhraseAndSeed(phrase_to_verify, passphrase, seed_to_verify, wlfile string) int {
-	var seed string
+func VerifyPhraseAndSeed(phrase, passphrase, seed string) (bool, error) {
 	// FIXME
-	_, seed, _ = PhraseToEntropyAndSeed(phrase_to_verify, passphrase, wlfile) /* WARNING NEED THE SEED IN THE RETURN NOT ONLY THE ERROR */
-	if seed_to_verify == seed {
-		fmt.Println("The phrase and the seed correspond !!")
-		return 0
-	} else {
-		fmt.Println("The phrase and the seed do NOT correspond !!")
-		return -1
+	// entropy, seed, err = PhraseToEntropyAndSeed(phrase_to_verify, passphrase, wlfile)
+	seedFromPhraseBytes, err := phraseToSeed(phrase, passphrase)
+	seedFromPhrase := hex.EncodeToString(seedFromPhraseBytes)
+	if err != nil {
+		return false, err
 	}
-	return -1
+	if seedFromPhrase != seed {
+		return false, nil
+	}
+	return true, nil
 }
 
 // FIXME lowercase
@@ -291,11 +289,13 @@ func PBKDF2_SHA512(password, salt []byte, count, output_len int) ([]byte, int) {
 
 /* This function converts a mnemonic phrase to the corresponding seed using PBKDF2. */
 // FIXME move to utils
-func phraseToSeed(phrase, passphrase string) (seed []byte, err int) {
-	seed, err = PBKDF2_SHA512([]byte(phrase), []byte("mnemonic"+passphrase), 2048, 64)
-	if err < 0 {
-		fmt.Fprintf(os.Stderr, "Error in PBKDF2_SHA512")
-		seed = nil
+func phraseToSeed(phrase, passphrase string) (seed []byte, err error) {
+	// FIXME return error not int and check for that
+	seed, x := PBKDF2_SHA512([]byte(phrase), []byte("mnemonic"+passphrase), 2048, 64)
+	if x < 0 {
+		return nil, errors.New("cannot generate")
+		// fmt.Fprintf(os.Stderr, "Error in PBKDF2_SHA512")
+		// seed = nil
 	}
-	return seed, err
+	return seed, nil
 }

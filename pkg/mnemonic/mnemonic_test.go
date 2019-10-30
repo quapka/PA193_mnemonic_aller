@@ -14,6 +14,7 @@ import (
 
 func TestPBKDF2_SHA512(t *testing.T) {
 	testData := []struct {
+		// FIXME lowercase
 		InputPassword, InputSalt, Output []byte
 		InputCount, InputOutputLen       int
 	}{
@@ -161,29 +162,29 @@ func TestCannotOpenWordlistFile(t *testing.T) {
 func TestFunc_cleanInputEntropy(t *testing.T) {
 
 	testData := []struct {
-		in_entropy string
-		out_bytes  []byte
-		out_error  error
+		inEntropy string
+		outBytes  []byte
+		outError  error
 	}{
-		{in_entropy: "", out_bytes: nil, out_error: newEntropyIsEmptyError()},
-		{in_entropy: "FF", out_bytes: nil, out_error: newENTNotInRangeError()},
-		{in_entropy: "000000000000000000000000000000000000000000000000000000000000000000", out_error: newENTNotInRangeError()},
-		{in_entropy: "0800000000000000000000000000000000000000000000", out_error: newEntropyNotDivisibleBy32Error(184)},
-		{in_entropy: "XX", out_bytes: nil, out_error: newEntropyIsNotHexadecimalError()},
-		{in_entropy: "B7CB8EE904628CEC2B6779C0FB8B1B91", out_bytes: []byte{0xB7, 0xCB, 0x8E, 0xE9, 0x04, 0x62, 0x8C, 0xEC, 0x2B, 0x67, 0x79, 0xC0, 0xFB, 0x8B, 0x1B, 0x91}, out_error: nil}, // 2**127 - 1
+		{inEntropy: "", outBytes: nil, outError: newEntropyIsEmptyError()},
+		{inEntropy: "FF", outBytes: nil, outError: newENTNotInRangeError()},
+		{inEntropy: "000000000000000000000000000000000000000000000000000000000000000000", outError: newENTNotInRangeError()},
+		{inEntropy: "0800000000000000000000000000000000000000000000", outError: newEntropyNotDivisibleBy32Error(184)},
+		{inEntropy: "XX", outBytes: nil, outError: newEntropyIsNotHexadecimalError()},
+		{inEntropy: "B7CB8EE904628CEC2B6779C0FB8B1B91", outBytes: []byte{0xB7, 0xCB, 0x8E, 0xE9, 0x04, 0x62, 0x8C, 0xEC, 0x2B, 0x67, 0x79, 0xC0, 0xFB, 0x8B, 0x1B, 0x91}, outError: nil}, // 2**127 - 1
 	}
 
 	for i, td := range testData {
-		bytes, err := cleanInputEntropy(td.in_entropy)
-		if !reflect.DeepEqual(bytes, td.out_bytes) {
+		bytes, err := cleanInputEntropy(td.inEntropy)
+		if !reflect.DeepEqual(bytes, td.outBytes) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
 			// FIXME give reasonable output!
 			t.Error()
 		}
-		if td.out_error != nil {
-			if err.Error() != td.out_error.Error() {
+		if td.outError != nil {
+			if err.Error() != td.outError.Error() {
 				t.Error(fmt.Sprintf("In %dth table-row", i+1))
-				t.Error(gotExp(err.Error(), td.out_error.Error()))
+				t.Error(gotExp(err.Error(), td.outError.Error()))
 			}
 		} else {
 			if err != nil {
@@ -195,14 +196,14 @@ func TestFunc_cleanInputEntropy(t *testing.T) {
 
 func TestFunc_getBinaryLength(t *testing.T) {
 	testData := []struct {
-		in_byte    []byte
-		out_length int
+		inByte    []byte
+		outLength int
 	}{
-		{in_byte: []byte{0x00}, out_length: 8},
-		{in_byte: []byte{0x05}, out_length: 8},
-		{in_byte: []byte{0x05, 0x00}, out_length: 16},
-		{in_byte: []byte{0x01, 0x00, 0x00, 0x00, 0x00}, out_length: 40},
-		{in_byte: []byte{0xAC, 0xFB, 0x96, 0x23, 0xE6,
+		{inByte: []byte{0x00}, outLength: 8},
+		{inByte: []byte{0x05}, outLength: 8},
+		{inByte: []byte{0x05, 0x00}, outLength: 16},
+		{inByte: []byte{0x01, 0x00, 0x00, 0x00, 0x00}, outLength: 40},
+		{inByte: []byte{0xAC, 0xFB, 0x96, 0x23, 0xE6,
 			0x9A, 0x1F, 0xF0, 0xF7, 0xB7,
 			0x2E, 0xDE, 0xED, 0x0A, 0x03,
 			0xE7, 0xD8, 0x51, 0x3D, 0xE8,
@@ -241,71 +242,71 @@ func TestFunc_getBinaryLength(t *testing.T) {
 			0x31, 0x77, 0x4F, 0x2C, 0xA8,
 			0x21, 0x50, 0x4F, 0x8F, 0x37,
 			0x78, 0x58, 0xEB, 0x53, 0x67,
-			0xA9, 0x89, 0xA2, 0x17, 0xE7}, out_length: 1600},
+			0xA9, 0x89, 0xA2, 0x17, 0xE7}, outLength: 1600},
 	}
 	for i, td := range testData {
-		got := getBinaryLength(td.in_byte)
-		if got != td.out_length {
+		got := getBinaryLength(td.inByte)
+		if got != td.outLength {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(strconv.Itoa(got), strconv.Itoa(td.out_length)))
+			t.Error(gotExp(strconv.Itoa(got), strconv.Itoa(td.outLength)))
 		}
 	}
 }
 
 func TestFunc_calculateCheckSum(t *testing.T) {
 	testData := []struct {
-		in_bytes     []byte
-		out_checkSum string
+		inBytes     []byte
+		outChecksum string
 	}{
-		{in_bytes: []byte{0xAE, 0x0F, 0x5C, 0xA4,
+		{inBytes: []byte{0xAE, 0x0F, 0x5C, 0xA4,
 			0xDA, 0xB1, 0x59, 0x16,
 			0x24, 0xA7, 0x3A, 0x0A,
-			0x86, 0x00, 0xF5, 0xB2}, out_checkSum: "0100"},
-		{in_bytes: []byte{0xD2, 0x18, 0x6C, 0x87,
+			0x86, 0x00, 0xF5, 0xB2}, outChecksum: "0100"},
+		{inBytes: []byte{0xD2, 0x18, 0x6C, 0x87,
 			0x83, 0x28, 0xA2, 0x44,
 			0xB6, 0x68, 0xF3, 0xF5,
 			0xA8, 0x90, 0x55, 0x25,
-			0xD7, 0xBF, 0xF7, 0x1C}, out_checkSum: "00001"},
-		{in_bytes: []byte{0xB7, 0x52, 0x21, 0x89,
+			0xD7, 0xBF, 0xF7, 0x1C}, outChecksum: "00001"},
+		{inBytes: []byte{0xB7, 0x52, 0x21, 0x89,
 			0x86, 0xDA, 0x1E, 0x61,
 			0xCB, 0x14, 0x70, 0x1C,
 			0x57, 0x35, 0x78, 0xA1,
 			0x8E, 0xC0, 0xFB, 0xBD,
-			0x3C, 0xDF, 0x65, 0x42}, out_checkSum: "010000"},
-		{in_bytes: []byte{0xB0, 0xE9, 0xE4, 0xDA,
+			0x3C, 0xDF, 0x65, 0x42}, outChecksum: "010000"},
+		{inBytes: []byte{0xB0, 0xE9, 0xE4, 0xDA,
 			0x11, 0xE7, 0x84, 0x93,
 			0x11, 0x14, 0xE7, 0x4D,
 			0xE2, 0x44, 0x18, 0x69,
 			0xBB, 0x8F, 0x59, 0xFE,
 			0xFF, 0xB5, 0x15, 0x67,
-			0x28, 0xC1, 0xAC, 0x01}, out_checkSum: "1011110"},
-		{in_bytes: []byte{0xE3, 0x18, 0x71, 0xC8,
+			0x28, 0xC1, 0xAC, 0x01}, outChecksum: "1011110"},
+		{inBytes: []byte{0xE3, 0x18, 0x71, 0xC8,
 			0xFE, 0x1E, 0xC0, 0x01,
 			0xBD, 0x10, 0x60, 0xBD,
 			0x0C, 0x5D, 0xDC, 0xDF,
 			0x54, 0x25, 0x73, 0xF5,
 			0x11, 0xAE, 0x55, 0x47,
 			0x6E, 0xDC, 0xCC, 0x93,
-			0x59, 0x3B, 0x78, 0xD6}, out_checkSum: "11101111"},
+			0x59, 0x3B, 0x78, 0xD6}, outChecksum: "11101111"},
 	}
 	for i, td := range testData {
-		checksum := calculateCheckSum(td.in_bytes)
-		if checksum != td.out_checkSum {
+		checksum := calculateCheckSum(td.inBytes)
+		if checksum != td.outChecksum {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(checksum, td.out_checkSum))
+			t.Error(gotExp(checksum, td.outChecksum))
 		}
 	}
 }
 
 func TestFunc_convertToBinary(t *testing.T) {
 	testData := []struct {
-		in_bytes   []byte
-		out_binary string
+		inBytes   []byte
+		outBinary string
 	}{
-		{in_bytes: []byte{0x00}, out_binary: "00000000"},
-		{in_bytes: []byte{0xFF}, out_binary: "11111111"},
-		{in_bytes: []byte{0x80, 0xFF}, out_binary: "1000000011111111"},
-		{in_bytes: []byte{0xAC, 0xFB, 0x96, 0x23, 0xE6,
+		{inBytes: []byte{0x00}, outBinary: "00000000"},
+		{inBytes: []byte{0xFF}, outBinary: "11111111"},
+		{inBytes: []byte{0x80, 0xFF}, outBinary: "1000000011111111"},
+		{inBytes: []byte{0xAC, 0xFB, 0x96, 0x23, 0xE6,
 			0x9A, 0x1F, 0xF0, 0xF7, 0xB7,
 			0x2E, 0xDE, 0xED, 0x0A, 0x03,
 			0xE7, 0xD8, 0x51, 0x3D, 0xE8,
@@ -344,13 +345,13 @@ func TestFunc_convertToBinary(t *testing.T) {
 			0x31, 0x77, 0x4F, 0x2C, 0xA8,
 			0x21, 0x50, 0x4F, 0x8F, 0x37,
 			0x78, 0x58, 0xEB, 0x53, 0x67,
-			0xA9, 0x89, 0xA2, 0x17, 0xE7}, out_binary: "1010110011111011100101100010001111100110100110100001111111110000111101111011011100101110110111101110110100001010000000111110011111011000010100010011110111101000110010110100100101110011010101110101011011010001000101011110000110000101100010110111111100110110101001011010011011100111010000011010111010111101111111100010101100000001101011001100100001110011001100111001100100011001011000110110010011101110110110000000101000100001000010100011110011101101100110000110001111100011000110111011001101110001011101111100110010101111000011011011011010001110000010100000101101001100100100101000011100010000101101000010101001111110100110111000011101100110100000110110111111001110000011010110110111101010100111110001011101100010011011100101000001010010100100000001111000111001000100101100111101001001000010000010001001011001101000011100011010000000000110110110110111111011100110010000100000011000110101110111101100000111010110101111111001010101011010011001110011001001001001011000101011000101001011111111111000111011011000110101001011110011001101000001000100011011010010100101011011001010000000100010110001101010000100111000010011010010111101101101101110110001011100010110001011110001101101010010000011001100010010110111011000100000001101011111110101001110101101000111111010100001111110010110110010100011100011111100000100011100111001001100101010101100101101100010100000110000001111101100001001110000110110111101011100110000010110001101000000110110000101000011000101110111010011110010110010101000001000010101000001001111100011110011011101111000010110001110101101010011011001111010100110001001101000100001011111100111"},
+			0xA9, 0x89, 0xA2, 0x17, 0xE7}, outBinary: "1010110011111011100101100010001111100110100110100001111111110000111101111011011100101110110111101110110100001010000000111110011111011000010100010011110111101000110010110100100101110011010101110101011011010001000101011110000110000101100010110111111100110110101001011010011011100111010000011010111010111101111111100010101100000001101011001100100001110011001100111001100100011001011000110110010011101110110110000000101000100001000010100011110011101101100110000110001111100011000110111011001101110001011101111100110010101111000011011011011010001110000010100000101101001100100100101000011100010000101101000010101001111110100110111000011101100110100000110110111111001110000011010110110111101010100111110001011101100010011011100101000001010010100100000001111000111001000100101100111101001001000010000010001001011001101000011100011010000000000110110110110111111011100110010000100000011000110101110111101100000111010110101111111001010101011010011001110011001001001001011000101011000101001011111111111000111011011000110101001011110011001101000001000100011011010010100101011011001010000000100010110001101010000100111000010011010010111101101101101110110001011100010110001011110001101101010010000011001100010010110111011000100000001101011111110101001110101101000111111010100001111110010110110010100011100011111100000100011100111001001100101010101100101101100010100000110000001111101100001001110000110110111101011100110000010110001101000000110110000101000011000101110111010011110010110010101000001000010101000001001111100011110011011101111000010110001110101101010011011001111010100110001001101000100001011111100111"},
 	}
 	for i, td := range testData {
-		got := convertToBinary(td.in_bytes)
-		if got != td.out_binary {
+		got := convertToBinary(td.inBytes)
+		if got != td.outBinary {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(got, td.out_binary))
+			t.Error(gotExp(got, td.outBinary))
 		}
 	}
 }
@@ -358,20 +359,20 @@ func TestFunc_convertToBinary(t *testing.T) {
 func TestFunc_createGroups(t *testing.T) {
 	// FIXME check for expected error as well!
 	testData := []struct {
-		in_binary  string
-		out_groups []string
+		inBinary  string
+		outGroups []string
 	}{
-		{in_binary: "", out_groups: nil},
-		{in_binary: "11111111111", out_groups: []string{"11111111111"}},
-		{in_binary: "1111111111100000000000", out_groups: []string{"11111111111", "00000000000"}},
-		{in_binary: "1010", out_groups: nil},
+		{inBinary: "", outGroups: nil},
+		{inBinary: "11111111111", outGroups: []string{"11111111111"}},
+		{inBinary: "1111111111100000000000", outGroups: []string{"11111111111", "00000000000"}},
+		{inBinary: "1010", outGroups: nil},
 	}
 
 	for i, td := range testData {
-		got, _ := createGroups(td.in_binary)
-		if !reflect.DeepEqual(got, td.out_groups) {
+		got, _ := createGroups(td.inBinary)
+		if !reflect.DeepEqual(got, td.outGroups) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(strings.Join(got, ", "), strings.Join(td.out_groups, ", ")))
+			t.Error(gotExp(strings.Join(got, ", "), strings.Join(td.outGroups, ", ")))
 		}
 	}
 }
@@ -379,21 +380,21 @@ func TestFunc_createGroups(t *testing.T) {
 func TestFunc_createIndices(t *testing.T) {
 	// FIXME add more tests
 	testData := []struct {
-		in_groups   []string
-		out_indices []int64
-		out_error   error
+		inGroups   []string
+		outIndices []int64
+		outError   error
 	}{
-		{in_groups: []string{"10101010101", "11111111111"}, out_indices: []int64{1365, 2047}, out_error: nil},
-		{in_groups: []string{"1010101010X", "11111111111"}, out_indices: nil, out_error: newCannotParseIntegerError("1010101010X")},
+		{inGroups: []string{"10101010101", "11111111111"}, outIndices: []int64{1365, 2047}, outError: nil},
+		{inGroups: []string{"1010101010X", "11111111111"}, outIndices: nil, outError: newCannotParseIntegerError("1010101010X")},
 	}
 
 	for i, td := range testData {
-		got, err := createIndices(td.in_groups)
-		if !reflect.DeepEqual(got, td.out_indices) {
+		got, err := createIndices(td.inGroups)
+		if !reflect.DeepEqual(got, td.outIndices) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
 			// FIXME give more descriptive errors
 		}
-		if equal, reason := equalError(err, td.out_error); !equal {
+		if equal, reason := equalError(err, td.outError); !equal {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
 			t.Error(reason)
 		}
@@ -405,38 +406,38 @@ func TestFunc_createPhraseWords(t *testing.T) {
 	// FIXME add more testData
 	// FIXME test error
 	testData := []struct {
-		in_indices      []int64
-		in_words        []string
-		out_phraseWords []string
+		inIndices      []int64
+		inWords        []string
+		outPhraseWords []string
 	}{
-		{in_indices: []int64{1, 1}, in_words: []string{"hello", "world"}, out_phraseWords: []string{"world", "world"}},
+		{inIndices: []int64{1, 1}, inWords: []string{"hello", "world"}, outPhraseWords: []string{"world", "world"}},
 	}
 	for i, td := range testData {
-		got, _ := createPhraseWords(td.in_indices, td.in_words)
-		if !reflect.DeepEqual(got, td.out_phraseWords) {
+		got, _ := createPhraseWords(td.inIndices, td.inWords)
+		if !reflect.DeepEqual(got, td.outPhraseWords) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(strings.Join(got, ", "), strings.Join(td.out_phraseWords, ", ")))
+			t.Error(gotExp(strings.Join(got, ", "), strings.Join(td.outPhraseWords, ", ")))
 		}
 	}
 }
 
 func TestFunc_loadWordList(t *testing.T) {
 	testData := []struct {
-		in_filepath string
-		out_words   []string
-		out_error   error
+		inFilepath string
+		outWords   []string
+		outError   error
 	}{
-		{in_filepath: "test-data/valid-wordlist.txt", out_words: validWordlist, out_error: nil},
-		{in_filepath: "test-data/does-not-exist.txt", out_words: nil, out_error: newOpenWordlistError("test-data/does-not-exist.txt")},
-		{in_filepath: "test-data/invalid-word-wordlist.txt", out_words: nil, out_error: newInvalidWordError("invalid invalid")},
+		{inFilepath: "test-data/valid-wordlist.txt", outWords: validWordlist, outError: nil},
+		{inFilepath: "test-data/does-not-exist.txt", outWords: nil, outError: newOpenWordlistError("test-data/does-not-exist.txt")},
+		{inFilepath: "test-data/invalid-word-wordlist.txt", outWords: nil, outError: newInvalidWordError("invalid invalid")},
 	}
 	for i, td := range testData {
-		words, err := loadWordlist(td.in_filepath)
-		if !reflect.DeepEqual(words, td.out_words) {
+		words, err := loadWordlist(td.inFilepath)
+		if !reflect.DeepEqual(words, td.outWords) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
 			t.Error("x")
 		}
-		if equal, reason := equalError(err, td.out_error); !equal {
+		if equal, reason := equalError(err, td.outError); !equal {
 			t.Error(reason)
 		}
 	}
@@ -444,70 +445,70 @@ func TestFunc_loadWordList(t *testing.T) {
 
 func TestFunc_cleanLine(t *testing.T) {
 	testData := []struct {
-		in_line   string
-		out_clean string
+		inLine   string
+		outClean string
 	}{
-		{in_line: "", out_clean: ""},
-		{in_line: "WORD", out_clean: "word"},
-		{in_line: "\n word", out_clean: "word"},
-		{in_line: "word \n", out_clean: "word"},
-		{in_line: "\t word \n", out_clean: "word"},
-		{in_line: "\t WORD \n", out_clean: "word"},
+		{inLine: "", outClean: ""},
+		{inLine: "WORD", outClean: "word"},
+		{inLine: "\n word", outClean: "word"},
+		{inLine: "word \n", outClean: "word"},
+		{inLine: "\t word \n", outClean: "word"},
+		{inLine: "\t WORD \n", outClean: "word"},
 	}
 
 	for i, td := range testData {
-		got := cleanLine(td.in_line)
-		if got != td.out_clean {
+		got := cleanLine(td.inLine)
+		if got != td.outClean {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(got, td.out_clean))
+			t.Error(gotExp(got, td.outClean))
 		}
 	}
 }
 
 func TestFunc_validateWord(t *testing.T) {
 	testData := []struct {
-		in_word   string
-		out_valid bool
+		inWord   string
+		outValid bool
 	}{
-		{in_word: "", out_valid: false},
-		{in_word: " word", out_valid: false},
-		{in_word: "word ", out_valid: false},
-		{in_word: "word word", out_valid: false},
-		{in_word: "word", out_valid: true},
-		{in_word: "longword", out_valid: true},
-		{in_word: "veryveryveryveryveryverylongword", out_valid: true},
-		{in_word: "1word", out_valid: true},
-		{in_word: "š", out_valid: true},
-		{in_word: "あいさつ", out_valid: true},
-		{in_word: "期", out_valid: true},
-		{in_word: "épidémie", out_valid: true},
+		{inWord: "", outValid: false},
+		{inWord: " word", outValid: false},
+		{inWord: "word ", outValid: false},
+		{inWord: "word word", outValid: false},
+		{inWord: "word", outValid: true},
+		{inWord: "longword", outValid: true},
+		{inWord: "veryveryveryveryveryverylongword", outValid: true},
+		{inWord: "1word", outValid: true},
+		{inWord: "š", outValid: true},
+		{inWord: "あいさつ", outValid: true},
+		{inWord: "期", outValid: true},
+		{inWord: "épidémie", outValid: true},
 	}
 	for i, td := range testData {
-		got := validateWord(td.in_word)
-		if got != td.out_valid {
+		got := validateWord(td.inWord)
+		if got != td.outValid {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(strconv.FormatBool(got), strconv.FormatBool(td.out_valid)))
+			t.Error(gotExp(strconv.FormatBool(got), strconv.FormatBool(td.outValid)))
 		}
 	}
 }
 
 func TestFunc_validateWordlist(t *testing.T) {
 	testData := []struct {
-		in_wordlist []string
-		out_valid   bool
-		out_error   error
+		inWordlist []string
+		outValid   bool
+		outError   error
 	}{
-		{in_wordlist: []string{"duplicates", "duplicates"}, out_valid: false, out_error: newWordlistContainsDuplicatesError()},
-		{in_wordlist: []string{"not", "enough", "words"}, out_valid: false, out_error: newNotExpectedWordlistSizeError()},
-		{in_wordlist: validWordlist, out_valid: true, out_error: nil},
+		{inWordlist: []string{"duplicates", "duplicates"}, outValid: false, outError: newWordlistContainsDuplicatesError()},
+		{inWordlist: []string{"not", "enough", "words"}, outValid: false, outError: newNotExpectedWordlistSizeError()},
+		{inWordlist: validWordlist, outValid: true, outError: nil},
 	}
 	for i, td := range testData {
-		valid, err := validateWordlist(td.in_wordlist)
-		if valid != td.out_valid {
+		valid, err := validateWordlist(td.inWordlist)
+		if valid != td.outValid {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
-			t.Error(gotExp(strconv.FormatBool(valid), strconv.FormatBool(td.out_valid)))
+			t.Error(gotExp(strconv.FormatBool(valid), strconv.FormatBool(td.outValid)))
 		}
-		if equal, reason := equalError(err, td.out_error); !equal {
+		if equal, reason := equalError(err, td.outError); !equal {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
 			t.Error(reason)
 		}

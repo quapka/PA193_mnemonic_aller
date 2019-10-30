@@ -21,7 +21,7 @@ const errNotExpectedWordlistSize = "PA193 mnemonic: The wordlist size is not 204
 func newEntropyNotDivisibleBy32Error(length int) error {
 	// FIXME add check for too big value
 	// FIXME use special constructor for every error?
-	return errors.New(fmt.Sprintf(errEntropyNotDivisibleBy32, length))
+	return fmt.Errorf(errEntropyNotDivisibleBy32, length)
 }
 
 func newEntropyIsNotHexadecimalError() error {
@@ -33,19 +33,19 @@ func newEntropyIsEmptyError() error {
 }
 
 func newENTNotInRangeError() error {
-	return errors.New(fmt.Sprintf(errENTNotInRange, lowerENTBound, upperENTBound))
+	return fmt.Errorf(errENTNotInRange, lowerENTBound, upperENTBound)
 }
 
 func newOpenWordlistError(dictFilepath string) error {
-	return errors.New(fmt.Sprintf(errOpenWordlistError, dictFilepath))
+	return fmt.Errorf(errOpenWordlistError, dictFilepath)
 }
 
 func newInvalidWordError(word string) error {
-	return errors.New(fmt.Sprintf(errInvalidWordError, word))
+	return fmt.Errorf(errInvalidWordError, word)
 }
 
 func newCannotParseIntegerError(integer string) error {
-	return errors.New(fmt.Sprintf(errCannotParseIntegerError, integer))
+	return fmt.Errorf(errCannotParseIntegerError, integer)
 }
 
 func newWordlistContainsDuplicatesError() error {

@@ -475,11 +475,12 @@ func TestFunc_validateWord(t *testing.T) {
 		{in_word: "word word", out_valid: false},
 		{in_word: "word", out_valid: true},
 		{in_word: "longword", out_valid: true},
-		{in_word: "WORD", out_valid: false},
 		{in_word: "veryveryveryveryveryverylongword", out_valid: true},
-		{in_word: "1word", out_valid: false},
-		// FIXME we should probably support Unicode
-		{in_word: "š", out_valid: false},
+		{in_word: "1word", out_valid: true},
+		{in_word: "š", out_valid: true},
+		{in_word: "あいさつ", out_valid: true},
+		{in_word: "期", out_valid: true},
+		{in_word: "épidémie", out_valid: true},
 	}
 	for i, td := range testData {
 		got := validateWord(td.in_word)

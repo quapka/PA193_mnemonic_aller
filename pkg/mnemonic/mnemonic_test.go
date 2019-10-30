@@ -385,18 +385,23 @@ func TestFunc_createGroups(t *testing.T) {
 	testData := []struct {
 		inBinary  string
 		outGroups []string
+		outError  error
 	}{
-		{inBinary: "", outGroups: nil},
-		{inBinary: "11111111111", outGroups: []string{"11111111111"}},
-		{inBinary: "1111111111100000000000", outGroups: []string{"11111111111", "00000000000"}},
-		{inBinary: "1010", outGroups: nil},
+		{inBinary: "", outGroups: nil, outError: nil},
+		{inBinary: "11111111111", outGroups: []string{"11111111111"}, outError: nil},
+		{inBinary: "1111111111100000000000", outGroups: []string{"11111111111", "00000000000"}, outError: nil},
+		{inBinary: "1010", outGroups: nil, outError: newBinaryLenghtIsNotDivisibleByGroupSize()},
 	}
 
 	for i, td := range testData {
-		got, _ := createGroups(td.inBinary)
+		got, err := createGroups(td.inBinary)
 		if !reflect.DeepEqual(got, td.outGroups) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
 			t.Error(gotExp(strings.Join(got, ", "), strings.Join(td.outGroups, ", ")))
+		}
+		if equal, reason := equalError(err, td.outError); !equal {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(reason)
 		}
 	}
 }

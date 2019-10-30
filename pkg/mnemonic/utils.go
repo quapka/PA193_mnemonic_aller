@@ -6,7 +6,6 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"os"
 	"regexp"
@@ -73,7 +72,7 @@ func createGroups(binary string) (groups []string, err error) {
 	// FIXME use internal errors?
 	// TODO maybe it does not need to be divisible?
 	if length%groupSize != 0 {
-		return nil, errors.New("'binary' length is not divisible by the group size")
+		return nil, newBinaryLenghtIsNotDivisibleByGroupSize()
 	}
 	// FIXME immediately create indices?
 	for i := 0; i < (length / groupSize); i++ {

@@ -355,18 +355,24 @@ func TestFunc_createIndices(t *testing.T) {
 	type testTemplate struct {
 		input     []string
 		expOutput []int64
+		out_error error
 	}
 
 	// FIXME add more tests
 	testData := []testTemplate{
-		{input: []string{"10101010101", "11111111111"}, expOutput: []int64{1365, 2047}},
+		{input: []string{"10101010101", "11111111111"}, expOutput: []int64{1365, 2047}, out_error: nil},
+		{input: []string{"1010101010X", "11111111111"}, expOutput: nil, out_error: newCannotParseIntegerError("1010101010X")},
 	}
 
 	for i, td := range testData {
-		got, _ := createIndices(td.input)
+		got, err := createIndices(td.input)
 		if !reflect.DeepEqual(got, td.expOutput) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
 			// FIXME give more descriptive errors
+		}
+		if equal, reason := equalError(err, td.out_error); !equal {
+			t.Error(fmt.Sprintf("In %dth table-row", i+1))
+			t.Error(reason)
 		}
 	}
 

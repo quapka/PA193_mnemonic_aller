@@ -87,7 +87,7 @@ func createIndices(groups []string) (indices []int64, err error) {
 		ind, err := strconv.ParseInt(group, 2, 0)
 		if err != nil {
 			// FIXME better message and consistent
-			return nil, errors.New("Cannot creat the phrase")
+			return nil, newCannotParseIntegerError(group)
 		}
 		indices = append(indices, ind)
 	}

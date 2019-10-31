@@ -2,6 +2,9 @@
 // Maintainers UCO: 408788, 497391, 497577
 // Description: Mnemonic API
 
+// Package mnemonic provides three exported functions for creating and
+// verifying BIP39 phrases and seeds according to
+// https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki.
 package mnemonic
 
 import (
@@ -13,12 +16,8 @@ import (
 	"strings"
 )
 
-// EntropyToPhraseAndSeed
-// FIXME add documention of functions
-// entropy can be of various length, therefore it needs to a slice not an array
-// FIXME check whether the underlying entropy array is changed, if so make a copy
-// params:
-// string entropy is a string of hexadecimal values
+// EntropyToPhraseAndSeed accepts entropy, optional passphrase and path to the
+// word file. It then creates the phrase and the seed.
 func EntropyToPhraseAndSeed(entropy, passphrase,
 	wlFile string) (phrase, seed string, err error) {
 	bytes, err := cleanInputEntropy(entropy)
@@ -49,7 +48,8 @@ func EntropyToPhraseAndSeed(entropy, passphrase,
 	return phrase, seed, nil
 }
 
-// PhraseToEntropyAndSeed
+// PhraseToEntropyAndSeed take the phrase, optional passphrase and path to the
+// word file. It then creates the entropy and the seed.
 func PhraseToEntropyAndSeed(phrase, passphrase,
 	wlFile string) (string, string, error) {
 
@@ -144,6 +144,8 @@ func PhraseToEntropyAndSeed(phrase, passphrase,
 	return entropyStr, seed, nil
 }
 
+// VerifyPhraseAndSeed takes phrase, optional passphrase and a seed checks
+// if the phrase generates the same seed using the passphrase.
 func VerifyPhraseAndSeed(phrase, passphrase, seed string) (bool, error) {
 	seedFromPhraseBytes, err := phraseToSeed(phrase, passphrase)
 	seedFromPhrase := hex.EncodeToString(seedFromPhraseBytes)

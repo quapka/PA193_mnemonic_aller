@@ -1,3 +1,4 @@
+// Minimal working example of using mnemonic.PhraseToEntropyAndSeed
 package main
 
 import (

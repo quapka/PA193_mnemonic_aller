@@ -2,6 +2,24 @@
 // Maintainers UCO: 408788 497391 497577
 // Description: Main file to test the API with command line
 
+// Exemplar command line utility calculating the bip39 phrases and seeds.
+// It can also verify whether phrase and seed match.
+// Below you can see detailed help message. Functionality is chosen implicitly
+// by observing the given flags.
+//
+//   $ ./bip39 --help
+//   Usage of ./bip39:
+//     -entropy string
+//           Entropy to get phrase and seed (can't be set with --phrase)
+//     -passphrase string
+//           Passphrase to be used to generate the seed
+//     -phrase string
+//           Phrase to get entropy and seed (can't be set with --entropy)
+//     -seed string
+//           Seed to be provided with phrase to verify them (requires --phrase to be set)
+//     -wordlist string
+//           Path to wordlist (required)
+//
 package main
 
 import (
@@ -36,7 +54,7 @@ func main() {
 	entropyPtr := flag.String("entropy", "",
 		"Entropy to get phrase and seed (can't be set with --phrase)")
 	passphrasePtr := flag.String("passphrase", "",
-		"Passphrase to get phrase and seed")
+		"Passphrase to be used to generate the seed")
 	seedPtr := flag.String("seed", "",
 		"Seed to be provided with phrase to verify them "+
 			"(requires --phrase to be set)")

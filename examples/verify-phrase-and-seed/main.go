@@ -1,3 +1,4 @@
+// Minimal working example of using mnemonic.VerifyPhraseAndSeed
 package main
 
 import (

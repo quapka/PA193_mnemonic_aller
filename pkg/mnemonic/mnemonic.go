@@ -91,7 +91,7 @@ func PhraseToEntropyAndSeed(phrase, passphrase,
 
 		// Get the index of the word in the wordsMap/wordlist
 		idx, found := wordsMap[wordP]
-		if found == false {
+		if !found {
 			return "", "", newWordNotFromTheWordlist(wordP, wlfile)
 		}
 

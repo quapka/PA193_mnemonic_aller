@@ -168,7 +168,7 @@ func cleanLine(line string) string {
 }
 
 func validateWord(word string) bool {
-	wordPatten, err := regexp.Compile("^[^\\s]+$")
+	wordPatten, err := regexp.Compile(`^[^\s]+$`)
 	if err != nil {
 		return false
 	}
@@ -290,9 +290,7 @@ func Pbkdf2Sha512(password, salt []byte, count, OutputLen int) ([]byte, int) {
 			}
 		} /* T_l = F (P, S, c, l) , */
 
-		output := make([]byte, OutputLen)
-
-		output = T1Tol[0]
+		output := T1Tol[0]
 
 		/* This part is only used if OutputLen is  greater than SHA512. (64 bytes)
 		* In bip39, the OutputLen is always 64 bytes, that is why we comment this part of code

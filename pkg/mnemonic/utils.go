@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -298,4 +299,16 @@ func pbkdf2Sha512(password, salt []byte, count, OutputLen int) ([]byte, int) {
 		// }
 		return output, 0
 	}
+}
+
+// This function converts a mnemonic phrase to the
+// corresponding seed using PBKDF2.
+func phraseToSeed(phrase, passphrase string) (seed []byte, err error) {
+	// FIXME return error not int and check for that
+	seed, x := pbkdf2Sha512([]byte(phrase),
+		[]byte("mnemonic"+passphrase), 2048, 64)
+	if x < 0 {
+		return nil, errors.New("cannot generate")
+	}
+	return seed, nil
 }

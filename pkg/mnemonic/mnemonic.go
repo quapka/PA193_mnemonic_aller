@@ -7,7 +7,6 @@ package mnemonic
 import (
 	"encoding/binary"
 	"encoding/hex"
-	"errors"
 	"io/ioutil"
 	"math/big"
 	"path/filepath"
@@ -155,19 +154,4 @@ func VerifyPhraseAndSeed(phrase, passphrase, seed string) (bool, error) {
 		return false, nil
 	}
 	return true, nil
-}
-
-// This function converts a mnemonic phrase to the
-// corresponding seed using PBKDF2.
-// FIXME move to utils
-func phraseToSeed(phrase, passphrase string) (seed []byte, err error) {
-	// FIXME return error not int and check for that
-	seed, x := pbkdf2Sha512([]byte(phrase),
-		[]byte("mnemonic"+passphrase), 2048, 64)
-	if x < 0 {
-		return nil, errors.New("cannot generate")
-		// fmt.Fprintf(os.Stderr, "Error in pbkdf2Sha512")
-		// seed = nil
-	}
-	return seed, nil
 }

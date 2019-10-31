@@ -16,6 +16,6 @@ script:
     - $GOPATH/bin/goveralls -service=travis-ci
     - deadcode pkg/mnemonic
     - dupl -t 100 pkg/mnemonic/mnemonic.go pkg/mnemonic/utils.go pkg/mnemonic/mnemonic_errors.go
-    - "!( errcheck ./... | grep -v 'defer ')"
+    - "! ( errcheck ./... | grep -v 'defer ')"
     - gosec -exclude=G304,G104 ./...
     - staticcheck -checks=all ./...

@@ -8,6 +8,7 @@ before_install:
     - go get -u github.com/mibk/dupl
     - go get -u github.com/kisielk/errcheck
     - go get github.com/securego/gosec/cmd/gosec
+    - go get honnef.co/go/tools/cmd/staticcheck
 script:
     - make
     - make build-examples
@@ -17,3 +18,4 @@ script:
     - dupl -t 100 pkg/mnemonic/mnemonic.go pkg/mnemonic/utils.go pkg/mnemonic/mnemonic_errors.go
     - "!( errcheck ./... | grep -v "defer ")"
     - gosec -exclude=G304,G104 ./...
+    - staticcheck -checks=all ./...

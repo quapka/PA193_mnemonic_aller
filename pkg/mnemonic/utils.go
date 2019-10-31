@@ -265,40 +265,39 @@ func pbkdf2Sha512(password, salt []byte, count, OutputLen int) ([]byte, int) {
 	// lCounter in the program is the index until l in the RFC
 	if OutputLen != 64 { /* Length of SHA-512 */ /* 1. If dkLen > (2^32 - 1) * hLen, output "derived key too long" and stop.*/
 		return nil, -1
-	} else {
-		err := 0
-		hLen := 64 /* Length of SHA-512 */
-		var l int
+	}
+	err := 0
+	hLen := 64 /* Length of SHA-512 */
+	var l int
 
-		if hLen != 0 {
-			l = OutputLen / hLen /* Should be equal to 1 !*/ /* l = CEIL (dkLen / hLen) , */
-		} else {
+	if hLen != 0 {
+		l = OutputLen / hLen /* Should be equal to 1 !*/ /* l = CEIL (dkLen / hLen) , */
+	} else {
+		return nil, -1
+	}
+	// r := OutputLen -(l-1)*hLen        /* Should be equal to OutputLen, so 64 bytes */  /* r = dkLen - (l - 1) * hLen . */
+	/* Commented because it is an unused variable */
+
+	T1Tol := make([][]byte, OutputLen)
+
+	for i := 0; i < l; i++ { /* T_1 = F (P, S, c, 1) ,*/
+		T1Tol[i] = make([]byte, OutputLen) /* T_2 = F (P, S, c, 2) ,*/
+
+		T1Tol[i], err = pbkdf2Sha512F(password, salt, count, i+1) /* i+1 because begin l in RFC        ...         */
+		if err < 0 {
 			return nil, -1
 		}
-		// r := OutputLen -(l-1)*hLen        /* Should be equal to OutputLen, so 64 bytes */  /* r = dkLen - (l - 1) * hLen . */
-		/* Commented because it is an unused variable */
+	} /* T_l = F (P, S, c, l) , */
 
-		T1Tol := make([][]byte, OutputLen)
+	output := T1Tol[0]
 
-		for i := 0; i < l; i++ { /* T_1 = F (P, S, c, 1) ,*/
-			T1Tol[i] = make([]byte, OutputLen) /* T_2 = F (P, S, c, 2) ,*/
-
-			T1Tol[i], err = pbkdf2Sha512F(password, salt, count, i+1) /* i+1 because begin l in RFC        ...         */
-			if err < 0 {
-				return nil, -1
-			}
-		} /* T_l = F (P, S, c, l) , */
-
-		output := T1Tol[0]
-
-		/* This part is only used if OutputLen is  greater than SHA512. (64 bytes)
-		* In bip39, the OutputLen is always 64 bytes, that is why we comment this part of code
-		 */
-		// for i := 1; i < l; i++ {
-		// 	output = append(output, T1Tol[i]...) /* DK = T_1 || T_2 ||  ...  || T_l<0..r-1> */
-		// }
-		return output, 0
-	}
+	/* This part is only used if OutputLen is  greater than SHA512. (64 bytes)
+	* In bip39, the OutputLen is always 64 bytes, that is why we comment this part of code
+	 */
+	// for i := 1; i < l; i++ {
+	// 	output = append(output, T1Tol[i]...) /* DK = T_1 || T_2 ||  ...  || T_l<0..r-1> */
+	// }
+	return output, 0
 }
 
 // This function converts a mnemonic phrase to the

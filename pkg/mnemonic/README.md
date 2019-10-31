@@ -1,0 +1,1 @@
+This folder contains the main bulk of the package source code. The file `mnemonic.go` defines the public API functions, `utils.go` defines internal helper functions, `mnemonic_erorrs.go` defines the various errors messages and `mnemonic_test.go` contains the tests.

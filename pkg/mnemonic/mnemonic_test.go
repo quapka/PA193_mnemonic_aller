@@ -19,7 +19,6 @@ import (
 // There is not official (RFC, etc.) test vectors for PBKDF2_SHA512
 func Testpbkdf2Sha512(t *testing.T) {
 	testData := []struct {
-		// FIXME lowercase
 		InputPassword, InputSalt, Output []byte
 		InputCount, InputOutputLen       int
 	}{
@@ -70,9 +69,6 @@ func Testpbkdf2Sha512(t *testing.T) {
 	}
 }
 
-// FIXME rewrite table tests to have inplace struct definition
-// FIXME testing for errors is not done nicely - problem with calling .Error() on 'nil'
-// FIXME nicely row in case error in table tests
 func gotExp(got, exp string) string {
 	return fmt.Sprintf("\nGot: %s\nExp: %s\n", got, exp)
 }
@@ -381,7 +377,6 @@ func TestFunc_convertToBinary(t *testing.T) {
 }
 
 func TestFunc_createGroups(t *testing.T) {
-	// FIXME check for expected error as well!
 	testData := []struct {
 		inBinary  string
 		outGroups []string
@@ -407,7 +402,6 @@ func TestFunc_createGroups(t *testing.T) {
 }
 
 func TestFunc_createIndices(t *testing.T) {
-	// FIXME add more tests
 	testData := []struct {
 		inGroups   []string
 		outIndices []int64
@@ -432,7 +426,6 @@ func TestFunc_createIndices(t *testing.T) {
 }
 
 func TestFunc_createPhraseWords(t *testing.T) {
-	// FIXME add more testData
 	// FIXME test error
 	testData := []struct {
 		inIndices      []int64

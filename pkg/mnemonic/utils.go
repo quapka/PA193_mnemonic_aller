@@ -233,9 +233,7 @@ func pbkdf2Sha512F(password, salt []byte, count, lCounter int) ([]byte, int) {
 		Sha512.Reset()
 	}
 
-	output := make([]byte, 64)
-
-	output = U1ToC[0]
+	output := U1ToC[0]
 
 	for i := 1; i < count; i++ { /* F (P, S, c, i) = U_1 \xor U_2 \xor ... \xor U_c */
 		for j := range U1ToC[i] {

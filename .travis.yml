@@ -7,6 +7,7 @@ before_install:
     - go get github.com/tsenart/deadcode
     - go get -u github.com/mibk/dupl
     - go get -u github.com/kisielk/errcheck
+    - go get github.com/securego/gosec/cmd/gosec
 script:
     - make
     - make build-examples
@@ -15,3 +16,4 @@ script:
     - deadcode pkg/mnemonic
     - dupl -t 100 pkg/mnemonic/mnemonic.go pkg/mnemonic/utils.go pkg/mnemonic/mnemonic_errors.go
     - "!( errcheck ./... | grep -v "defer ")"
+    - gosec -exclude=G304,G104 ./...

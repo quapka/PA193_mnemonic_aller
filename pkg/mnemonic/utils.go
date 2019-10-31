@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -132,11 +133,12 @@ func validateWordlist(wordList []string) error {
 	return nil
 }
 
-func loadWordlist(filepath string) ([]string, error) {
-	wlFile, err := os.Open(filepath) // For read access.
+func loadWordlist(wlFilePath string) ([]string, error) {
+	wlFilePath = filepath.Clean(wlFilePath)
+	wlFile, err := os.Open(wlFilePath) // For read access.
 	if err != nil {
 		// TODO bubble the original error? Or simply in a wrapper?
-		return nil, newOpenWordlistError(filepath)
+		return nil, newOpenWordlistError(wlFilePath)
 	}
 	defer wlFile.Close()
 

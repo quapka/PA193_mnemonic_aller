@@ -10,6 +10,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"math/big"
+	"path/filepath"
 	"strings"
 )
 
@@ -69,6 +70,7 @@ func PhraseToEntropyAndSeed(phrase, passphrase, wlfile string) (string, string, 
 	}
 
 	// Read the wordlist file and extract words
+	wlfile = filepath.Clean(wlfile)
 	content, err := ioutil.ReadFile(wlfile)
 	if err != nil {
 		return "", "", newOpenWordlistError(wlfile)

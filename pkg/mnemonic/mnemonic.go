@@ -57,7 +57,6 @@ func PhraseToEntropyAndSeed(phrase, passphrase,
 
 	// Use a big int for arbitrary-precision arithmetic of big numbers
 	bg := big.NewInt(0)
-	checksum := big.NewInt(0)
 	mask := big.NewInt(0)
 
 	wordsPhrase := strings.Fields(phrase)
@@ -114,8 +113,6 @@ func PhraseToEntropyAndSeed(phrase, passphrase,
 		mask = big.NewInt(255)
 	}
 
-	// Get the checksum
-	checksum = checksum.And(bg, mask)
 	// Remove the checksum bits
 	bg.Div(bg, big.NewInt(0).Add(mask, big.NewInt(1)))
 

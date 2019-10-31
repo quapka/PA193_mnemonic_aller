@@ -20,7 +20,8 @@ import (
 // FIXME check whether the underlying entropy array is changed, if so make a copy
 // params:
 // string entropy is a string of hexadecimal values
-func EntropyToPhraseAndSeed(entropy, passphrase, dictFilepath string) (phrase, seed string, err error) {
+func EntropyToPhraseAndSeed(entropy, passphrase,
+	dictFilepath string) (phrase, seed string, err error) {
 	bytes, err := cleanInputEntropy(entropy)
 	if err != nil {
 		return "", "", err
@@ -51,7 +52,8 @@ func EntropyToPhraseAndSeed(entropy, passphrase, dictFilepath string) (phrase, s
 
 // PhraseToEntropyAndSeed
 // FIXME make wlfile naming consistetn!
-func PhraseToEntropyAndSeed(phrase, passphrase, wlfile string) (string, string, error) {
+func PhraseToEntropyAndSeed(phrase, passphrase,
+	wlfile string) (string, string, error) {
 
 	var wBytes [2]byte
 
@@ -65,7 +67,8 @@ func PhraseToEntropyAndSeed(phrase, passphrase, wlfile string) (string, string, 
 	nbWords := len(wordsPhrase)
 
 	// Nb words should be 12, 15, 18, 21 or 24
-	if nbWords != 12 && nbWords != 15 && nbWords != 18 && nbWords != 21 && nbWords != 24 {
+	if nbWords != 12 && nbWords != 15 && nbWords != 18 &&
+		nbWords != 21 && nbWords != 24 {
 		return "", "", newInvalidNumberOfPhraseWords()
 	}
 
@@ -144,8 +147,6 @@ func PhraseToEntropyAndSeed(phrase, passphrase, wlfile string) (string, string, 
 }
 
 func VerifyPhraseAndSeed(phrase, passphrase, seed string) (bool, error) {
-	// FIXME
-	// entropy, seed, err = PhraseToEntropyAndSeed(phrase_to_verify, passphrase, wlfile)
 	seedFromPhraseBytes, err := phraseToSeed(phrase, passphrase)
 	seedFromPhrase := hex.EncodeToString(seedFromPhraseBytes)
 	if err != nil {
@@ -157,11 +158,13 @@ func VerifyPhraseAndSeed(phrase, passphrase, seed string) (bool, error) {
 	return true, nil
 }
 
-/* This function converts a mnemonic phrase to the corresponding seed using PBKDF2. */
+// This function converts a mnemonic phrase to the
+// corresponding seed using PBKDF2.
 // FIXME move to utils
 func phraseToSeed(phrase, passphrase string) (seed []byte, err error) {
 	// FIXME return error not int and check for that
-	seed, x := Pbkdf2Sha512([]byte(phrase), []byte("mnemonic"+passphrase), 2048, 64)
+	seed, x := Pbkdf2Sha512([]byte(phrase),
+		[]byte("mnemonic"+passphrase), 2048, 64)
 	if x < 0 {
 		return nil, errors.New("cannot generate")
 		// fmt.Fprintf(os.Stderr, "Error in Pbkdf2Sha512")

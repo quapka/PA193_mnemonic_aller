@@ -52,7 +52,8 @@ func calculateCheckSum(bytes []byte) string {
 	checkSum := hash[0] >> (8 - checkSumLen)
 	// create formatting string like "%04s" - "%08s"
 	checkSumFormat := fmt.Sprintf("%%0%ds", checkSumLen)
-	checkSumBin := fmt.Sprintf(checkSumFormat, strconv.FormatInt(int64(checkSum), 2))
+	checkSumBin := fmt.Sprintf(checkSumFormat,
+		strconv.FormatInt(int64(checkSum), 2))
 	return checkSumBin
 }
 
@@ -96,7 +97,8 @@ func createIndices(groups []string) (indices []int64, err error) {
 	return indices, nil
 }
 
-func createPhraseWords(indices []int64, words []string) (phraseWords []string, err error) {
+func createPhraseWords(indices []int64,
+	words []string) (phraseWords []string, err error) {
 	// FIXME perform input checking!
 	for _, ind := range indices {
 		phraseWords = append(phraseWords, words[ind])

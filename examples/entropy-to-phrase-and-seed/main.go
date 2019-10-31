@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-	// example values taken from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+	// example values taken from
+	// https://github.com/trezor/python-mnemonic/blob/master/vectors.json
 	// set the entropy
 	entropy := "00000000000000000000000000000000"
 	// optional: set the passphrase, can be empty ""
@@ -15,7 +16,8 @@ func main() {
 	// set the filepath to the wordlist that should be used
 	wordlistFilepath := "../../wordlists/english.txt"
 	// calculate the phrase and seed
-	phrase, seed, err := mnemonic.EntropyToPhraseAndSeed(entropy, passphrase, wordlistFilepath)
+	phrase, seed, err := mnemonic.EntropyToPhraseAndSeed(entropy,
+		passphrase, wordlistFilepath)
 	if err != nil {
 		// exit in case there was an error
 		log.Fatal(err)

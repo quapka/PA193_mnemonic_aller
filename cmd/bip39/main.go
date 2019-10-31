@@ -31,11 +31,17 @@ func displayMissingArg(msg string) {
 
 func main() {
 
-	phrasePtr := flag.String("phrase", "", "Phrase to get entropy and seed (can't be set with --entropy)")
-	entropyPtr := flag.String("entropy", "", "Entropy to get phrase and seed (can't be set with --phrase)")
-	passphrasePtr := flag.String("passphrase", "", "Passphrase to get phrase and seed")
-	seedPtr := flag.String("seed", "", "Seed to be provided with phrase to verify them (requires --phrase to be set)")
-	wordlistFilePtr := flag.String("wordlist", "", "Path to wordlist (required)")
+	phrasePtr := flag.String("phrase", "",
+		"Phrase to get entropy and seed (can't be set with --entropy)")
+	entropyPtr := flag.String("entropy", "",
+		"Entropy to get phrase and seed (can't be set with --phrase)")
+	passphrasePtr := flag.String("passphrase", "",
+		"Passphrase to get phrase and seed")
+	seedPtr := flag.String("seed", "",
+		"Seed to be provided with phrase to verify them "+
+			"(requires --phrase to be set)")
+	wordlistFilePtr := flag.String("wordlist", "",
+		"Path to wordlist (required)")
 
 	flag.Parse()
 
@@ -52,7 +58,8 @@ func main() {
 
 	if *seedPtr != "" {
 		// Verify phrase and seed
-		match, err := mnemonic.VerifyPhraseAndSeed(*phrasePtr, *passphrasePtr, *seedPtr)
+		match, err := mnemonic.VerifyPhraseAndSeed(*phrasePtr,
+			*passphrasePtr, *seedPtr)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -64,7 +71,8 @@ func main() {
 
 	} else if *phrasePtr != "" {
 		// Get the entropy and seed from the phrase
-		if entropy, seed, err := mnemonic.PhraseToEntropyAndSeed(*phrasePtr, *passphrasePtr, *wordlistFilePtr); err != nil {
+		if entropy, seed, err := mnemonic.PhraseToEntropyAndSeed(*phrasePtr,
+			*passphrasePtr, *wordlistFilePtr); err != nil {
 			fmt.Println(err)
 		} else {
 			fmt.Println("From phrase:", *phrasePtr)
@@ -74,7 +82,8 @@ func main() {
 
 	} else {
 		// Get the phrase and seed from the entropy
-		if phrase, seed, err := mnemonic.EntropyToPhraseAndSeed(*entropyPtr, *passphrasePtr, *wordlistFilePtr); err != nil {
+		if phrase, seed, err := mnemonic.EntropyToPhraseAndSeed(*entropyPtr,
+			*passphrasePtr, *wordlistFilePtr); err != nil {
 			fmt.Println(err)
 		} else {
 			fmt.Println("From entropy: ", *entropyPtr)

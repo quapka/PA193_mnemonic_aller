@@ -175,13 +175,13 @@ func validateWord(word string) bool {
 	return wordPatten.MatchString(word)
 }
 
-// Pbkdf2Sha512F
+// pbkdf2Sha512F
 // This function is the implementation of the function F in Pbkdf2
 // according to the RFC 2898 notation
 // https://www.ietf.org/rfc/rfc2898.txt
-// This function is called by the Pbkdf2Sha512 function and should not
+// This function is called by the pbkdf2Sha512 function and should not
 // be used in another context
-func Pbkdf2Sha512F(password, salt []byte, count, lCounter int) ([]byte, int) {
+func pbkdf2Sha512F(password, salt []byte, count, lCounter int) ([]byte, int) {
 	// Translation variable with RFC :
 	// U_1, U_2, U_3 ... U_c is the array U1ToC, begin at 0 end at c-1
 	// T_1, T_2, T_3 ... T_l is the array T1Tol, begin at 0 end at l-1
@@ -245,15 +245,15 @@ func Pbkdf2Sha512F(password, salt []byte, count, lCounter int) ([]byte, int) {
 	return output, 0
 }
 
-// Pbkdf2Sha512
-// Implementation of Pbkdf2Sha512 according to the RFC 2898
+// pbkdf2Sha512
+// Implementation of pbkdf2Sha512 according to the RFC 2898
 // https://www.ietf.org/rfc/rfc2898.txt
 // Parameter :
 // password   : is the password that will be derived (P in RFC)
 // salt 		  : is the salt that will be added to password (S in RFC)
 // count 		  : Number of iteration of SHA-512 (c in the RFC)
 // OutputLen : Length of the derived password (output) MUST BE 64 as 64 bytes
-func Pbkdf2Sha512(password, salt []byte, count, OutputLen int) ([]byte, int) {
+func pbkdf2Sha512(password, salt []byte, count, OutputLen int) ([]byte, int) {
 	// Translation variable with RFC :
 	// U_1, U_2, U_3 ... U_c is the array U1ToC, begin at 0 end at c-1
 	// T_1, T_2, T_3 ... T_l is the array T1Tol, begin at 0 end at l-1
@@ -284,7 +284,7 @@ func Pbkdf2Sha512(password, salt []byte, count, OutputLen int) ([]byte, int) {
 		for i := 0; i < l; i++ { /* T_1 = F (P, S, c, 1) ,*/
 			T1Tol[i] = make([]byte, OutputLen) /* T_2 = F (P, S, c, 2) ,*/
 
-			T1Tol[i], err = Pbkdf2Sha512F(password, salt, count, i+1) /* i+1 because begin l in RFC        ...         */
+			T1Tol[i], err = pbkdf2Sha512F(password, salt, count, i+1) /* i+1 because begin l in RFC        ...         */
 			if err < 0 {
 				return nil, -1
 			}

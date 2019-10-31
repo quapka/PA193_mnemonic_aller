@@ -17,7 +17,7 @@ import (
 // This function use some test vector for PBKDF2_SHA512 from
 // https://github.com/Anti-weakpasswords/PBKDF2-Test-Vectors/releases
 // There is not official (RFC, etc.) test vectors for PBKDF2_SHA512
-func TestPbkdf2Sha512(t *testing.T) {
+func Testpbkdf2Sha512(t *testing.T) {
 	testData := []struct {
 		// FIXME lowercase
 		InputPassword, InputSalt, Output []byte
@@ -63,7 +63,7 @@ func TestPbkdf2Sha512(t *testing.T) {
 		},
 	}
 	for i, tD := range testData {
-		result, _ := Pbkdf2Sha512(tD.InputPassword, tD.InputSalt, tD.InputCount, tD.InputOutputLen)
+		result, _ := pbkdf2Sha512(tD.InputPassword, tD.InputSalt, tD.InputCount, tD.InputOutputLen)
 		if !reflect.DeepEqual(result, tD.Output) {
 			t.Error(fmt.Sprintf("In %dth table-row", i+1))
 		}

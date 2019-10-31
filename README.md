@@ -81,6 +81,14 @@ $ make build-examples
 $ make verify-phrase-and-seed
 ```
 
+## Documentation
+
+In case you have `godoc` tool you can view the documentation nicely by running:
+```
+godoc --http=localhost:6060
+```
+which will create a local websever, where you can search for this package.
+
 ## Development
 
 In order to run test you can write `make test` and should observe similar output:

@@ -21,7 +21,7 @@ import (
 // params:
 // string entropy is a string of hexadecimal values
 func EntropyToPhraseAndSeed(entropy, passphrase,
-	dictFilepath string) (phrase, seed string, err error) {
+	wlFile string) (phrase, seed string, err error) {
 	bytes, err := cleanInputEntropy(entropy)
 	if err != nil {
 		return "", "", err
@@ -36,7 +36,7 @@ func EntropyToPhraseAndSeed(entropy, passphrase,
 	// create the indices
 	indices, _ := createIndices(groups)
 	// open the wordlist file
-	wordList, err := loadWordlist(dictFilepath)
+	wordList, err := loadWordlist(wlFile)
 	if err != nil {
 		return "", "", err
 	}
@@ -51,9 +51,8 @@ func EntropyToPhraseAndSeed(entropy, passphrase,
 }
 
 // PhraseToEntropyAndSeed
-// FIXME make wlfile naming consistetn!
 func PhraseToEntropyAndSeed(phrase, passphrase,
-	wlfile string) (string, string, error) {
+	wlFile string) (string, string, error) {
 
 	var wBytes [2]byte
 
@@ -73,10 +72,10 @@ func PhraseToEntropyAndSeed(phrase, passphrase,
 	}
 
 	// Read the wordlist file and extract words
-	wlfile = filepath.Clean(wlfile)
-	content, err := ioutil.ReadFile(wlfile)
+	wlFile = filepath.Clean(wlFile)
+	content, err := ioutil.ReadFile(wlFile)
 	if err != nil {
-		return "", "", newOpenWordlistError(wlfile)
+		return "", "", newOpenWordlistError(wlFile)
 	}
 	// Split the file into words, handle multi words on one line
 	wordsList := strings.Fields(string(content))
@@ -92,7 +91,7 @@ func PhraseToEntropyAndSeed(phrase, passphrase,
 		// Get the index of the word in the wordsMap/wordlist
 		idx, found := wordsMap[wordP]
 		if !found {
-			return "", "", newWordNotFromTheWordlist(wordP, wlfile)
+			return "", "", newWordNotFromTheWordlist(wordP, wlFile)
 		}
 
 		// Concatenate the index to find back the binary vector

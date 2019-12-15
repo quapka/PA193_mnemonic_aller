@@ -50,7 +50,7 @@ func calculateCheckSum(bytes []byte) string {
 	ENT := getBinaryLength(bytes)
 	checkSumLen := ENT / 32
 	// checkSumLen is always between 4-8
-	checkSum := hash[0] >> (8 - checkSumLen)
+	checkSum := hash[0] >> (uint) (8 - checkSumLen)
 	// create formatting string like "%04s" - "%08s"
 	checkSumFormat := fmt.Sprintf("%%0%ds", checkSumLen)
 	checkSumBin := fmt.Sprintf(checkSumFormat,

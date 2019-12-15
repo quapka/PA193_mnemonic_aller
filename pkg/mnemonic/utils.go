@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -133,6 +134,13 @@ func validateWordlist(wordList []string) error {
 	if actualSize != expectedSize {
 		return newNotExpectedWordlistSizeError()
 	}
+
+	if !sort.SliceIsSorted(wordList, func(p, q int) bool {
+		return wordList[p] < wordList[q]
+	}) {
+		return newWordlistNotSortedError()
+	}
+
 	return nil
 }
 

@@ -23,6 +23,12 @@ func cleanInputEntropy(entropy string) ([]byte, error) {
 		return nil, newEntropyIsEmptyError()
 	}
 
+	// make sure that the entropy is small enough,
+	// so that the rest of the function can't cause int overflow
+	if len(entropy) > upperENTBound / 4 {
+		return nil, newENTNotInRangeError()
+	}
+
 	// FIXME test on huge inputs
 	bytes, err := hex.DecodeString(entropy)
 	if err != nil {
